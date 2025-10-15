@@ -2,7 +2,7 @@ import configparser
 import os
 
 
-CONFIG_PLACEMENT = os.path.expanduser("~/.congenial-carnival/config.ini")
+CONFIG_PLACEMENT = os.path.expanduser("~/.config/congenial-carnival/config.ini")
 STEAM_API_KEY = "steam_api_key"
 STEAM_ID = "steam_id"
 
