@@ -3,6 +3,7 @@ import os
 
 
 CONFIG_PLACEMENT = os.path.expanduser("~/.config/congenial-carnival/config.ini")
+DATABASE_FILE_PATH = "database"
 STEAM_API_KEY = "steam_api_key"
 STEAM_ID = "steam_id"
 
@@ -15,12 +16,15 @@ class Configuration:
     def is_loaded(self) -> bool:
         return self.load_error is None
 
+    def get_database_path(self) -> str:
+        return self.config.get(DATABASE_FILE_PATH)
+
 
 def load_config(path=CONFIG_PLACEMENT) -> Configuration:
     config = configparser.ConfigParser()
     try:
         config.read(path)
-        keys_to_get = [STEAM_API_KEY, STEAM_ID]
+        keys_to_get = [DATABASE_FILE_PATH, STEAM_API_KEY, STEAM_ID]
         values = {key: config.get("DEFAULT", key, fallback=None) for key in keys_to_get}
         return Configuration(values)
     except (FileNotFoundError, OSError, configparser.Error) as e:
