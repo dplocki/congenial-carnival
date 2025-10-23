@@ -19,6 +19,12 @@ class Configuration:
     def get_database_path(self) -> str:
         return self.config.get(DATABASE_FILE_PATH)
 
+    def get_steam_api_key(self) -> str:
+        return self.config.get(STEAM_API_KEY)
+
+    def get_steam_id(self) -> str:
+        return self.config.get(STEAM_ID)
+
 
 def load_config(path=CONFIG_PLACEMENT) -> Configuration:
     config = configparser.ConfigParser()
