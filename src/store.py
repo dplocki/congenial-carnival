@@ -18,3 +18,12 @@ class Store:
             cursor = connection.cursor()
             cursor.execute("SELECT id, name, howlongtobeat FROM games")
             return cursor.fetchall()
+
+    def add_game(self, name: str):
+        with sqlite3.connect(self.db_file_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                "INSERT INTO games (name) VALUES (?)",
+                (name,),
+            )
+            connection.commit()
