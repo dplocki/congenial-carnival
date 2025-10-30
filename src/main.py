@@ -1,10 +1,13 @@
 import logging
 from config import load_config
+from howlongtobeat import fetch_hltb_time
 from steam import SteamGamesApi
 from store import Store
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s"
+    )
 
     config = load_config()
     logging.info("Configuration loaded")
@@ -25,3 +28,15 @@ if __name__ == "__main__":
     for game_name in steam_games_names - stored_games_names:
         logging.info("New game found: %s", game_name)
         store.add_game(game_name)
+
+    for game_id, game_name, game_required_time in stored_games.values():
+        if game_required_time is not None:
+            continue
+
+        logging.info("Fetching HLTB time for: %s", game_name)
+        value = fetch_hltb_time(game_name)
+        if value is not None:
+            logging.info("Found HLTB time for %s: %d hours", game_name, value)
+            store.update_game_required_time(game_id, value)
+        else:
+            logging.info("HLTB time not found for: %s", game_name)
