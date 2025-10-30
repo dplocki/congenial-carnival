@@ -27,3 +27,12 @@ class Store:
                 (name,),
             )
             connection.commit()
+
+    def update_game_required_time(self, game_id: int, required_time: int):
+        with sqlite3.connect(self.db_file_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                "UPDATE games SET howlongtobeat = ? WHERE id = ?",
+                (required_time, game_id),
+            )
+            connection.commit()
