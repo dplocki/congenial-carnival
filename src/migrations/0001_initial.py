@@ -5,7 +5,7 @@ step(
 CREATE TABLE games (
     id INTEGER PRIMARY KEY,
     name TEXT,
-    howlongtobeat INTEGER
+    howlongtobeat INTEGER NULLABLE
 )
 """,
     "DROP TABLE games",
