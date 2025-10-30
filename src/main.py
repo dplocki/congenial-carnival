@@ -11,7 +11,8 @@ if __name__ == "__main__":
 
     store = Store(config.get_database_path())
     store.migrate_database()
-    stored_games = {game["name"]: game for game in store.get_stored_games()}
+
+    stored_games = {game[1]: game for game in store.get_stored_games()}
     stored_games_names = set(stored_games.keys())
     logging.info("Games loaded from the database")
 
