@@ -16,7 +16,7 @@ class Store:
     def get_stored_games(self):
         with sqlite3.connect(self.db_file_path) as connection:
             cursor = connection.cursor()
-            cursor.execute("SELECT id, name, howlongtobeat FROM games")
+            cursor.execute("SELECT id, name FROM games")
             return cursor.fetchall()
 
     def add_game(self, name: str):
