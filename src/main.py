@@ -1,8 +1,9 @@
 import logging
 from config import load_config
 from howlongtobeat import fetch_hltb_time
-from steam import SteamGamesApi
-from store import Store
+from services.steam import SteamGamesApi
+from services.store import Store
+import punq
 
 if __name__ == "__main__":
     logging.basicConfig(
@@ -12,7 +13,11 @@ if __name__ == "__main__":
     config = load_config()
     logging.info("Configuration loaded")
 
-    store = Store(config.get_database_path())
+    container = punq.Container()
+    container.register(SteamGamesApi)
+    container.register(Store, factory=lambda: Store(config.get_database_path()))
+
+    store = container.resolve(Store)
     store.migrate_database()
 
     stored_games = {game[1]: game for game in store.get_stored_games()}
