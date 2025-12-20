@@ -4,9 +4,28 @@
 
 The script for managing games.
 
-## Formatting
+## Development
+
+Suggested environment-manager: [UV](https://docs.astral.sh/uv/).
+
+### Downloading uv
+
+```sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Set up
+
+```sh
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
+
+### Formatting
 
 The project is using [Black](https://pypi.org/project/black/).
+
 
 ```sh
 black .
