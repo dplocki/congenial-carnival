@@ -10,3 +10,6 @@ class Games:
 
     def get_all_games(self) -> Iterable[Game]:
         return []
+
+    def add_game(self, game: Game) -> None:
+        pass
