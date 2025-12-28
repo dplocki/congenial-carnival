@@ -16,10 +16,12 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ### ⚙️ Set up
 
+Dependencies are in the `pyproject.toml` file.
+
 ```sh
 uv venv
 source .venv/bin/activate
-uv pip install -r requirements.txt
+uv pip install -e .
 ```
 
 ### 🎨 Formatting
