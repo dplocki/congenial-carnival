@@ -3,7 +3,7 @@ import importlib
 import inspect
 import pkgutil
 from typing import Generator
-from commands.refresh_games import RefreshGamesCommand
+from commands.refresh_steam_games import RefreshSteamGamesCommand
 from services.config import Configuration, load_config
 from services.games import Games
 from services.steam_store import SteamStore
@@ -13,8 +13,8 @@ from punq import Container
 
 def get_classes_from(package_name: str) -> Generator[type, None, None]:
     pkg = importlib.import_module(package_name)
-    for _, modname, _ in pkgutil.iter_modules(pkg.__path__):
-        full_name = f"{package_name}.{modname}"
+    for _, mod_name, _ in pkgutil.iter_modules(pkg.__path__):
+        full_name = f"{package_name}.{mod_name}"
         mod = importlib.import_module(full_name)
         yield from (
             obj
@@ -49,4 +49,4 @@ if __name__ == "__main__":
     container = build_container(config)
 
     # Load games
-    container.resolve(RefreshGamesCommand).execute()
+    container.resolve(RefreshSteamGamesCommand).execute()
