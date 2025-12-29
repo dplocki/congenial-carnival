@@ -6,7 +6,7 @@ from typing import Generator
 from commands.refresh_steam_games import RefreshSteamGamesCommand
 from services.config import Configuration, load_config
 from services.games import Games
-from services.steam_store import SteamStore
+from services.steam_api import SteamApi
 from services.store import Store
 from punq import Container
 
@@ -27,8 +27,8 @@ def build_container(config: Configuration) -> Container:
     container = Container()
     container.register(Games)
     container.register(
-        SteamStore,
-        factory=lambda: SteamStore(config.get_steam_api_key(), config.get_steam_id()),
+        SteamApi,
+        factory=lambda: SteamApi(config.get_steam_api_key(), config.get_steam_id()),
     )
     container.register(Store, factory=lambda: Store(config.get_database_path()))
 

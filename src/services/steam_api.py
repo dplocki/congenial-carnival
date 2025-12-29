@@ -1,7 +1,7 @@
 import requests
 
 
-class SteamStore:
+class SteamApi:
     STEAM_BASE_URL = "http://api.steampowered.com"
 
     def __init__(self, api_key: str, steam_id: str):
@@ -23,7 +23,7 @@ class SteamStore:
         return {}
 
     def get_owned_games(self):
-        url = f"{SteamStore.STEAM_BASE_URL}/IPlayerService/GetOwnedGames/v0001/"
+        url = f"{SteamApi.STEAM_BASE_URL}/IPlayerService/GetOwnedGames/v0001/"
         params = {
             "key": self.api_key,
             "steamid": self.steam_id,
