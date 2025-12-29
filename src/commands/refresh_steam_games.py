@@ -10,6 +10,7 @@ get_name = attrgetter("name")
 
 
 class RefreshSteamGamesCommand:
+
     def __init__(self, games: Games, steam_api: SteamApi):
         self.games = games
         self.steam_api = steam_api

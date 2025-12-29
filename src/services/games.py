@@ -1,5 +1,5 @@
 from typing import Iterable
-from models.event import AddGameEvent
+from models.event import AddGameEvent, EventType
 from models.game import Game
 from services.store import Store
 
@@ -12,7 +12,11 @@ class Games:
 
     def get_all_games(self) -> Iterable[Game]:
         if self.games is None:
-            self.games = []
+            self.games = [
+                Game(event["name"])
+                for event in self.store.get_all_events()
+                if event["type"] == EventType.ADD_GAME
+            ]
 
         return self.games
 

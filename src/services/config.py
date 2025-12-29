@@ -9,6 +9,7 @@ STEAM_ID = "steam_id"
 
 
 class Configuration:
+
     def __init__(self, config, load_error=None):
         self.config = config
         self.load_error = load_error
