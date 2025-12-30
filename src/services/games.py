@@ -1,5 +1,5 @@
 from typing import Dict, Iterable
-from models.event import AddGameEvent, EventType
+from models.event import AddGameEvent
 from models.game import Game
 from services.store import Store
 
