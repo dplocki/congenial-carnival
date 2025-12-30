@@ -2,16 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import StrEnum
 
+from models.game_location import GameLocation
+
 
 class EventType(StrEnum):
     ADD_GAME = "add_game"
-
-
-class GameLocation(StrEnum):
-    STEAM = "steam"
-    GOG = "gog"
-    EPIC = "epic"
-    OTHER = "other"
 
 
 @dataclass(frozen=True, init=False)

@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Dict, Iterable
 from models.event import AddGameEvent, EventType
 from models.game import Game
 from services.store import Store
@@ -8,17 +8,22 @@ class Games:
 
     def __init__(self, store: Store):
         self.store = store
-        self.games = None
+        self.games: Dict[str, Game] = None
 
     def get_all_games(self) -> Iterable[Game]:
         if self.games is None:
-            self.games = [
-                Game(event["name"])
-                for event in self.store.get_all_events()
-                if event["type"] == EventType.ADD_GAME
-            ]
+            self.games = {}
 
-        return self.games
+            for event in self.store.get_all_events():
+                game_name = event["name"]
+
+                if game_name not in self.games:
+                    self.games[game_name] = Game(event["name"])
+
+                self.games[game_name].available.append(event["where_is"])
+
+        return self.games.values()
 
     def add_game(self, event: AddGameEvent) -> None:
         self.store.add_event(event)
+        self.games = None
