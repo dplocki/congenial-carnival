@@ -1,5 +1,5 @@
 from typing import Dict, Iterable
-from models.event import AddGameEvent
+from models.event import AddGameEvent, DeleteGameEvent
 from models.game import Game
 from services.store import Store
 
@@ -25,5 +25,9 @@ class Games:
         return self.games.values()
 
     def add_game(self, event: AddGameEvent) -> None:
+        self.store.add_event(event)
+        self.games = None
+
+    def remove_game(self, event: DeleteGameEvent) -> None:
         self.store.add_event(event)
         self.games = None
