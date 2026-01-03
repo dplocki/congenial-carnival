@@ -45,4 +45,4 @@ class RefreshSteamGamesCommand:
 
         for game_name in already_own_games:
             logger.info(f"The game as not available on Steam anymore: {game_name}")
-            self.games.remove_game(DeleteSteamGameEvent(name=game_name))
+            self.games.remove_game(DeleteSteamGameEvent(game_name))
