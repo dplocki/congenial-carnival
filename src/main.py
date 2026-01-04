@@ -3,6 +3,7 @@ import importlib
 import inspect
 import pkgutil
 from typing import Generator
+from commands.refresh_gog_games import RefreshGogGamesCommand
 from commands.refresh_steam_games import RefreshSteamGamesCommand
 from services.config import Configuration, load_config
 from services.games import Games
@@ -25,6 +26,7 @@ def get_classes_from(package_name: str) -> Generator[type, None, None]:
 
 def build_container(config: Configuration) -> Container:
     container = Container()
+    container.register(Configuration, instance=config)
     container.register(Games)
     container.register(
         SteamApi,
@@ -49,4 +51,5 @@ if __name__ == "__main__":
     container = build_container(config)
 
     # Load games
-    container.resolve(RefreshSteamGamesCommand).execute()
+    #container.resolve(RefreshSteamGamesCommand).execute()
+    container.resolve(RefreshGogGamesCommand).execute()
