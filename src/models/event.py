@@ -47,6 +47,15 @@ class AddSteamGameEvent(AddGameEvent):
 
 
 @dataclass(frozen=True, init=False)
+class AddGogGameEvent(AddGameEvent):
+    gog_id: int
+
+    def __init__(self, name: str, gog_id: int, timestamp: int = None):
+        super().__init__(name, GameLocation.GOG, timestamp)
+        object.__setattr__(self, "gog_id", gog_id)
+
+
+@dataclass(frozen=True, init=False)
 class DeleteGameEvent(Event):
     name: str
     where_is: GameLocation
@@ -63,3 +72,11 @@ class DeleteSteamGameEvent(DeleteGameEvent):
 
     def __init__(self, name: str, timestamp: int = None):
         super().__init__(name, GameLocation.STEAM, timestamp)
+
+
+@dataclass(frozen=True, init=False)
+class DeleteGogGameEvent(DeleteGameEvent):
+    name: str
+
+    def __init__(self, name: str, timestamp: int = None):
+        super().__init__(name, GameLocation.GOG, timestamp)

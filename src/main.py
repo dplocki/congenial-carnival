@@ -51,5 +51,6 @@ if __name__ == "__main__":
     container = build_container(config)
 
     # Load games
-    #container.resolve(RefreshSteamGamesCommand).execute()
-    container.resolve(RefreshGogGamesCommand).execute()
+    # container.resolve(RefreshSteamGamesCommand).execute()
+    container.resolve(RefreshGogGamesCommand).execute([])
+
