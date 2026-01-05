@@ -12,17 +12,15 @@ class Games:
 
     def get_all_games(self) -> Iterable[Game]:
         if self.games is None:
-            self.games = {}
-
-            for event in self.store.get_all_events():
-                game_name = event["name"]
-
-                if game_name not in self.games:
-                    self.games[game_name] = Game(event["name"])
-
-                self.games[game_name].available.append(event["where_is"])
+            self.__build_games_directory()
 
         return self.games.values()
+
+    def get_game(self, title: str) -> Game:
+        if self.games is None:
+            self.__build_games_directory()
+
+        return self.games.get(title, None)
 
     def add_game(self, event: AddGameEvent) -> None:
         self.store.add_event(event)
@@ -31,3 +29,14 @@ class Games:
     def remove_game(self, event: DeleteGameEvent) -> None:
         self.store.add_event(event)
         self.games = None
+
+    def __build_games_directory(self) -> None:
+        self.games = {}
+
+        for event in self.store.get_all_events():
+            game_name = event["name"]
+
+            if game_name not in self.games:
+                self.games[game_name] = Game(event["name"])
+
+            self.games[game_name].available.append(event["where_is"])
