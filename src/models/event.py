@@ -8,6 +8,7 @@ from models.game_location import GameLocation
 class EventType(StrEnum):
     ADD_GAME = "add_game"
     DELETE_GAME = "delete_game"
+    COMPLETED_GAME = "completed_game"
 
 
 @dataclass(frozen=True, init=False)
@@ -80,3 +81,12 @@ class DeleteGogGameEvent(DeleteGameEvent):
 
     def __init__(self, name: str, timestamp: int = None):
         super().__init__(name, GameLocation.GOG, timestamp)
+
+
+@dataclass(frozen=True, init=False)
+class MarkGameCompleteEvent(Event):
+    name: str
+
+    def __init__(self, name: str, timestamp: int = None):
+        super().__init__(EventType.COMPLETED_GAME, timestamp)
+        object.__setattr__(self, "name", name)

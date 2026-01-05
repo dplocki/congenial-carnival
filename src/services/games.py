@@ -1,5 +1,5 @@
 from typing import Dict, Iterable
-from models.event import AddGameEvent, DeleteGameEvent
+from models.event import AddGameEvent, DeleteGameEvent, EventType, MarkGameCompleteEvent
 from models.game import Game
 from services.store import Store
 
@@ -30,10 +30,17 @@ class Games:
         self.store.add_event(event)
         self.games = None
 
+    def change_game_state(self, event: MarkGameCompleteEvent) -> None:
+        self.store.add_event(event)
+        self.games = None
+
     def __build_games_directory(self) -> None:
         self.games = {}
 
         for event in self.store.get_all_events():
+            if event["type"] != EventType.ADD_GAME:
+                continue
+
             game_name = event["name"]
 
             if game_name not in self.games:

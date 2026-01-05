@@ -1,7 +1,7 @@
 import logging
 from operator import attrgetter
 from typing import Dict, Iterable
-from models.event import AddGogGameEvent, DeleteGogGameEvent
+from models.event import AddGogGameEvent, DeleteGogGameEvent, MarkGameCompleteEvent
 from models.game_location import GameLocation
 from services.config import Configuration
 from services.games import Games
@@ -29,12 +29,17 @@ class RefreshGogGamesCommand:
 
         for game_datum in games_data:
             title = game_datum["title"]
-            if title in already_own_games:
+            if title not in already_own_games:
+                logger.info(f"Adding new game on Gog: {title}")
+                self.games.add_game(AddGogGameEvent(title, game_datum["id"]))
+
+            game = self.games.get_game(title)
+            if not game.id_complete and "COMPLETED" in game_datum["tags"]:
+                logger.info(f"Game complete: {title} (Gog)")
+                self.games.change_game_state(MarkGameCompleteEvent(title))
+
                 already_own_games.remove(title)
                 continue
-
-            logger.info(f"Adding new game on Gog: {title}")
-            self.games.add_game(AddGogGameEvent(title, game_datum["id"]))
 
         for game_name in already_own_games:
             logger.info(f"Removing game from Gog: {game_name}")
