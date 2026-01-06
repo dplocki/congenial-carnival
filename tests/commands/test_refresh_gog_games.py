@@ -59,3 +59,19 @@ def test_marks_existing_game_complete():
     games.change_game_state.assert_called_once()
     evt = games.change_game_state.call_args[0][0]
     assert isinstance(evt, MarkGameCompleteEvent) and evt.name == owned_game_name
+
+
+def test_does_not_mark_if_already_complete():
+    owned_game_name = generate_str()
+    owned_game = generate_game(
+        name=owned_game_name, available={GameLocation.GOG}, is_complete=True
+    )
+
+    games = Mock()
+    games.get_all_games.return_value = [owned_game]
+    games.get_game.return_value = owned_game
+
+    cmd = RefreshGogGamesCommand(config=Mock(), games=games)
+    cmd.execute([{"title": owned_game_name, "id": generate_int(), "tags": ["COMPLETED"]}])
+
+    games.change_game_state.assert_not_called()
