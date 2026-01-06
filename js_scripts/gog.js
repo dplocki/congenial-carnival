@@ -1,6 +1,9 @@
-// Log on gog.com
-// Go to https://www.gog.com/account
+// Log on gog.com,  go to https://www.gog.com/account
 await (async function() {
+    if (window.location.toString() !== 'https://www.gog.com/account') {
+        return [];
+    }
+
     const last_page = parseInt(document.querySelector('.list__pagination .pagin__total').textContent, 10);
     const result = [];
     let tags = {};
