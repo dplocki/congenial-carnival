@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 
 from models.event import AddSteamGameEvent
-from models.game import Game
 from models.game_location import GameLocation
 from commands.refresh_steam_games import RefreshSteamGamesCommand
 from tests.utils.data_providers import generate_game, generate_int, generate_str

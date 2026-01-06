@@ -38,5 +38,6 @@ def generate_game(**kwargs) -> Game:
     """Generate a Game instance with random or specified attributes."""
     name = kwargs.get("name", generate_str())
     available = kwargs.get("available", [])
+    is_complete = kwargs.get("is_complete", False)
 
-    return Game(name=name, available=available)
+    return Game(name=name, available=available, is_complete=is_complete)
