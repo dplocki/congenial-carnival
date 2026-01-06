@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import Mock
 from src.commands.refresh_gog_games import RefreshGogGamesCommand
 from models.event import AddGogGameEvent, DeleteGogGameEvent, MarkGameCompleteEvent
@@ -33,3 +32,18 @@ def test_adds_new_gog_game_when_not_owned():
     event = games.add_game.call_args[0][0]
     assert isinstance(event, AddGogGameEvent)
     assert event.name == new_game_name and event.gog_id == new_game_id
+
+
+def test_skips_existing_gog_game():
+    owned_game_name = generate_str()
+
+    games = Mock()
+    games.get_all_games.return_value = [GameStub(owned_game_name, available={GameLocation.GOG})]
+    games.get_game.return_value = GameStub(owned_game_name)
+
+    cmd = RefreshGogGamesCommand(config=Mock(), games=games)
+    cmd.execute([{"title": owned_game_name, "id": generate_int(), "tags": []}])
+
+    games.add_game.assert_not_called()
+    games.change_game_state.assert_not_called()
+    games.remove_game.assert_not_called()
