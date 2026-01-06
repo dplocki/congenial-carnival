@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+from models.event import EventType
 from models.game_location import GameLocation
 from services.games import Games
 from tests.utils.asserts import are_collections_equal
@@ -21,13 +22,26 @@ def test_get_all_games_empty():
 
 
 def test_get_all_games_aggregates_events():
-    store = Mock()
     single_game_title = generate_str()
     repeating_game_title = generate_str()
+
+    store = Mock()
     store.get_all_events.return_value = [
-        {"name": repeating_game_title, "where_is": GameLocation.STEAM},
-        {"name": single_game_title, "where_is": GameLocation.OTHER},
-        {"name": repeating_game_title, "where_is": GameLocation.GOG},
+        {
+            "type": EventType.ADD_GAME,
+            "name": repeating_game_title,
+            "where_is": GameLocation.STEAM,
+        },
+        {
+            "type": EventType.ADD_GAME,
+            "name": single_game_title,
+            "where_is": GameLocation.OTHER,
+        },
+        {
+            "type": EventType.ADD_GAME,
+            "name": repeating_game_title,
+            "where_is": GameLocation.GOG,
+        },
     ]
 
     games_service = Games(store)
