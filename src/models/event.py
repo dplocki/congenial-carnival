@@ -57,6 +57,12 @@ class AddGogGameEvent(AddGameEvent):
 
 
 @dataclass(frozen=True, init=False)
+class AddEpicGameEvent(AddGameEvent):
+    def __init__(self, name: str, timestamp: int = None):
+        super().__init__(name, GameLocation.EPIC, timestamp)
+
+
+@dataclass(frozen=True, init=False)
 class DeleteGameEvent(Event):
     name: str
     where_is: GameLocation
