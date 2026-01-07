@@ -6,6 +6,7 @@ from typing import Generator
 from commands.refresh_epic_games import RefreshEpicGamesCommand
 from commands.refresh_gog_games import RefreshGogGamesCommand
 from commands.refresh_steam_games import RefreshSteamGamesCommand
+from queries.owned_games import OwnedGamesQuery
 from services.config import Configuration, load_config
 from services.games import Games
 from services.steam_api import SteamApi
@@ -38,6 +39,9 @@ def build_container(config: Configuration) -> Container:
     for command_class in get_classes_from("commands"):
         container.register(command_class)
 
+    for query_class in get_classes_from("queries"):
+        container.register(query_class)
+
     return container
 
 
@@ -55,3 +59,6 @@ if __name__ == "__main__":
     # container.resolve(RefreshSteamGamesCommand).execute()
     # container.resolve(RefreshGogGamesCommand).execute([])
     # container.resolve(RefreshEpicGamesCommand).execute([])
+
+    # Queries
+    container.resolve(OwnedGamesQuery).execute()
