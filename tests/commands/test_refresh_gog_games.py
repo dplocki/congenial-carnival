@@ -72,6 +72,8 @@ def test_does_not_mark_if_already_complete():
     games.get_game.return_value = owned_game
 
     cmd = RefreshGogGamesCommand(config=Mock(), games=games)
-    cmd.execute([{"title": owned_game_name, "id": generate_int(), "tags": ["COMPLETED"]}])
+    cmd.execute(
+        [{"title": owned_game_name, "id": generate_int(), "tags": ["COMPLETED"]}]
+    )
 
     games.change_game_state.assert_not_called()
