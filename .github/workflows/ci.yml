@@ -12,6 +12,8 @@ jobs:
     name: Tests & Black check (Python ${{ matrix.python-version }})
 
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .:src
 
     strategy:
       matrix:
