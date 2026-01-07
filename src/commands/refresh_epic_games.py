@@ -14,7 +14,7 @@ class RefreshEpicGamesCommand:
 
     def execute(self, games_titles: Iterable[str]) -> None:
         existing_titles = set(
-            game.title
+            game.name
             for game in self.games.get_all_games()
             if GameLocation.EPIC in game.available
         )
@@ -23,7 +23,6 @@ class RefreshEpicGamesCommand:
             if title in existing_titles:
                 logger.info(f"Removing game from Epic: {title}")
                 self.games.remove_game(DeleteGameEvent(title, GameLocation.EPIC))
-                continue
             else:
                 logger.info(f"Adding new game on Epic: {title}")
                 self.games.add_game(AddEpicGameEvent(title))
