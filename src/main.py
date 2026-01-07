@@ -3,6 +3,7 @@ import importlib
 import inspect
 import pkgutil
 from typing import Generator
+from commands.refresh_epic_games import RefreshEpicGamesCommand
 from commands.refresh_gog_games import RefreshGogGamesCommand
 from commands.refresh_steam_games import RefreshSteamGamesCommand
 from services.config import Configuration, load_config
@@ -52,5 +53,5 @@ if __name__ == "__main__":
 
     # Load games
     # container.resolve(RefreshSteamGamesCommand).execute()
-    container.resolve(RefreshGogGamesCommand).execute([])
-
+    # container.resolve(RefreshGogGamesCommand).execute([])
+    # container.resolve(RefreshEpicGamesCommand).execute([])
