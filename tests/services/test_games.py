@@ -4,7 +4,7 @@ from models.event import EventType
 from models.game_location import GameLocation
 from services.games import Games
 from tests.utils.asserts import are_collections_equal
-from tests.utils.data_providers import generate_str
+from tests.utils.data_providers import generate_enum, generate_str
 
 
 def test_get_all_games_empty():
@@ -55,3 +55,56 @@ def test_get_all_games_aggregates_events():
 
     game_from_single_sources = next(g for g in all_games if g.name == single_game_title)
     assert game_from_single_sources.available == [GameLocation.OTHER]
+
+
+def test_get_deleted_games_should_not_appear():
+    removed_game_title = generate_str()
+    removed_game_location = generate_enum(GameLocation)
+    store = Mock()
+    store.get_all_events.return_value = [
+        {
+            "type": EventType.ADD_GAME,
+            "name": removed_game_title,
+            "where_is": removed_game_location
+        },
+        {
+            "type": EventType.DELETE_GAME,
+            "name": removed_game_title,
+            "where_is": removed_game_location
+        },
+    ]
+
+    games_service = Games(store)
+
+    get_all_games = list(games_service.get_all_games())
+
+    assert len(get_all_games) == 0
+
+
+def test_get_deleted_games_should_affect_only_game_location():
+    removed_game_title = generate_str()
+    store = Mock()
+    store.get_all_events.return_value = [
+        {
+            "type": EventType.ADD_GAME,
+            "name": removed_game_title,
+            "where_is": GameLocation.GOG,
+        },
+        {
+            "type": EventType.ADD_GAME,
+            "name": removed_game_title,
+            "where_is": GameLocation.STEAM,
+        },
+        {
+            "type": EventType.DELETE_GAME,
+            "name": removed_game_title,
+            "where_is": GameLocation.STEAM,
+        },
+    ]
+
+    games_service = Games(store)
+
+    get_all_games = list(games_service.get_all_games())
+
+    assert len(get_all_games) == 1
+    assert get_all_games[0].available == [GameLocation.GOG]

@@ -38,12 +38,19 @@ class Games:
         self.games = {}
 
         for event in self.store.get_all_events():
-            if event["type"] != EventType.ADD_GAME:
-                continue
+            if event["type"] == EventType.ADD_GAME:
+                game_name = event["name"]
 
-            game_name = event["name"]
+                if game_name not in self.games:
+                    self.games[game_name] = Game(event["name"])
 
-            if game_name not in self.games:
-                self.games[game_name] = Game(event["name"])
+                self.games[game_name].available.append(event["where_is"])
 
-            self.games[game_name].available.append(event["where_is"])
+            elif event["type"] == EventType.DELETE_GAME:
+                game_name = event["name"]
+                location = event["where_is"]
+
+                if game_name in self.games:
+                    self.games[game_name].available.remove(location)
+                    if not self.games[game_name].available:
+                        del self.games[game_name]
