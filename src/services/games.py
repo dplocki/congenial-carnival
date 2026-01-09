@@ -50,7 +50,9 @@ class Games:
                 game_name = event["name"]
                 location = event["where_is"]
 
-                if game_name in self.games:
-                    self.games[game_name].available.remove(location)
-                    if not self.games[game_name].available:
-                        del self.games[game_name]
+                if game_name not in self.games:
+                    continue
+
+                self.games[game_name].available.remove(location)
+                if not self.games[game_name].available:
+                    del self.games[game_name]
