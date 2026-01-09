@@ -65,12 +65,12 @@ def test_get_deleted_games_should_not_appear():
         {
             "type": EventType.ADD_GAME,
             "name": removed_game_title,
-            "where_is": removed_game_location
+            "where_is": removed_game_location,
         },
         {
             "type": EventType.DELETE_GAME,
             "name": removed_game_title,
-            "where_is": removed_game_location
+            "where_is": removed_game_location,
         },
     ]
 
