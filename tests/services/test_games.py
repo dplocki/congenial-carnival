@@ -108,3 +108,26 @@ def test_get_deleted_games_should_affect_only_game_location():
 
     assert len(get_all_games) == 1
     assert get_all_games[0].available == [GameLocation.GOG]
+
+
+def test_get_game_marks_game_as_complete():
+    completed_game_title = generate_str()
+    store = Mock()
+    store.get_all_events.return_value = [
+        {
+            "type": EventType.ADD_GAME,
+            "name": completed_game_title,
+            "where_is": generate_enum(GameLocation),
+        },
+        {
+            "type": EventType.COMPLETED_GAME,
+            "name": completed_game_title,
+        },
+    ]
+
+    games_service = Games(store)
+
+    game = games_service.get_game(completed_game_title)
+
+    assert game is not None
+    assert game.is_complete

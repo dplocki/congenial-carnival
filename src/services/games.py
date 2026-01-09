@@ -56,3 +56,8 @@ class Games:
                 self.games[game_name].available.remove(location)
                 if not self.games[game_name].available:
                     del self.games[game_name]
+
+            elif event["type"] == EventType.COMPLETED_GAME:
+                game_name = event["name"]
+                game = self.games[game_name]
+                self.games[game_name] = Game(game.name, game.available, is_complete=True)
