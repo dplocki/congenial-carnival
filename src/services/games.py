@@ -60,4 +60,6 @@ class Games:
             elif event["type"] == EventType.COMPLETED_GAME:
                 game_name = event["name"]
                 game = self.games[game_name]
-                self.games[game_name] = Game(game.name, game.available, is_complete=True)
+                self.games[game_name] = Game(
+                    game.name, game.available, is_complete=True
+                )
