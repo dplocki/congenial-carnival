@@ -28,7 +28,7 @@ class RefreshGogGamesCommand:
         )
 
         for game_datum in games_data:
-            title = game_datum["title"].trim()
+            title = game_datum["title"].strip()
             if title not in already_own_games:
                 logger.info(f"Adding new game on Gog: {title}")
                 self.games.add_game(AddGogGameEvent(title, game_datum["id"]))
