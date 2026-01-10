@@ -28,7 +28,7 @@ class RefreshGogGamesCommand:
         )
 
         for game_datum in games_data:
-            title = game_datum["title"]
+            title = game_datum["title"].trim()
             if title not in already_own_games:
                 logger.info(f"Adding new game on Gog: {title}")
                 self.games.add_game(AddGogGameEvent(title, game_datum["id"]))
@@ -39,7 +39,6 @@ class RefreshGogGamesCommand:
             if not game.is_complete and "COMPLETED" in game_datum["tags"]:
                 logger.info(f"Game complete: {title} (Gog)")
                 self.games.change_game_state(MarkGameCompleteEvent(title))
-                continue
 
         for game_name in already_own_games:
             logger.info(f"Removing game from Gog: {game_name}")
