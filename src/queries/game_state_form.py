@@ -12,5 +12,5 @@ class GameStateFormQuery:
         print("Name,Platforms,Complete,Is not a game,Is different game")
         for game in games:
             print(
-                f'"{game.name}", {" ".join(game.available)}, {"Yes" if game.is_complete else "No"},,'
+                f'"{game.name}", {" ".join(game.available)}, {"Yes" if game.is_complete else "No"},No,'
             )
