@@ -16,8 +16,7 @@ class RefreshEpicGamesCommand:
         existing_titles = set(
             event.name
             for event in self.store.get_all_events()
-            if event.type == EventType.ADD_GAME
-            and event.where_is == GameLocation.EPIC
+            if event.type == EventType.ADD_GAME and event.where_is == GameLocation.EPIC
         )
 
         for title in set(games_titles) ^ existing_titles:
