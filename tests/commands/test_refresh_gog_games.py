@@ -5,75 +5,76 @@ from models.game_location import GameLocation
 from tests.utils.data_providers import generate_game, generate_int, generate_str
 
 
+def build_add_gog_game_event(title: str, gog_id: int = None) -> dict:
+    return AddGogGameEvent(name=title, gog_id=gog_id or generate_int())
+
+
+def build_mark_game_complete_event(title: str) -> dict:
+    return MarkGameCompleteEvent(name=title)
+
+
+def build_gog_game_entity(
+    title: str, gog_id: int = None, is_complete: bool = False
+) -> dict:
+    return {
+        "title": title,
+        "id": gog_id or generate_int(),
+        "tags": ["COMPLETED"] if is_complete else [],
+    }
+
+
 def test_adds_new_gog_game_when_not_owned():
     new_game_name = generate_str()
     new_game_id = generate_int()
 
-    games = Mock()
-    games.get_all_games.return_value = []
-    games.get_game.return_value = generate_game(
-        name=new_game_name, available={GameLocation.GOG}
-    )
+    store = Mock()
+    store.get_all_events.return_value = []
 
-    cmd = RefreshGogGamesCommand(config=Mock(), games=games)
-    cmd.execute([{"title": new_game_name, "id": new_game_id, "tags": []}])
+    cmd = RefreshGogGamesCommand(store)
+    cmd.execute([build_gog_game_entity(new_game_name, new_game_id)])
 
-    games.add_game.assert_called_once()
-    games.change_game_state.assert_not_called()
-    games.remove_game.assert_not_called()
-
-    event = games.add_game.call_args[0][0]
+    store.add_event.assert_called_once()
+    event = store.add_event.call_args[0][0]
     assert isinstance(event, AddGogGameEvent)
     assert event.name == new_game_name and event.gog_id == new_game_id
 
 
 def test_skips_existing_gog_game():
     owned_game_name = generate_str()
-    owned_game = generate_game(name=owned_game_name, available={GameLocation.GOG})
 
-    games = Mock()
-    games.get_all_games.return_value = [owned_game]
-    games.get_game.return_value = owned_game
+    store = Mock()
+    store.get_all_events.return_value = [build_add_gog_game_event(owned_game_name)]
 
-    cmd = RefreshGogGamesCommand(config=Mock(), games=games)
-    cmd.execute([{"title": owned_game_name, "id": generate_int(), "tags": []}])
+    cmd = RefreshGogGamesCommand(store)
+    cmd.execute([build_gog_game_entity(owned_game_name, is_complete=True)])
 
-    games.add_game.assert_not_called()
-    games.change_game_state.assert_not_called()
-    games.remove_game.assert_not_called()
+    store.add_event.assert_not_called()
 
 
 def test_marks_existing_game_complete():
     owned_game_name = generate_str()
-    owned_game = generate_game(name=owned_game_name, available={GameLocation.GOG})
 
-    games = Mock()
-    games.get_all_games.return_value = [owned_game]
-    games.get_game.return_value = owned_game
+    store = Mock()
+    store.get_all_events.return_value = [build_add_gog_game_event(owned_game_name)]
 
-    cmd = RefreshGogGamesCommand(config=Mock(), games=games)
-    cmd.execute(
-        [{"title": owned_game_name, "id": generate_int(), "tags": ["COMPLETED"]}]
-    )
+    cmd = RefreshGogGamesCommand(store)
+    cmd.execute([build_gog_game_entity(owned_game_name, is_complete=True)])
 
-    games.change_game_state.assert_called_once()
-    evt = games.change_game_state.call_args[0][0]
+    store.change_game_state.assert_called_once()
+    evt = store.change_game_state.call_args[0][0]
     assert isinstance(evt, MarkGameCompleteEvent) and evt.name == owned_game_name
 
 
 def test_does_not_mark_if_already_complete():
     owned_game_name = generate_str()
-    owned_game = generate_game(
-        name=owned_game_name, available={GameLocation.GOG}, is_complete=True
-    )
 
-    games = Mock()
-    games.get_all_games.return_value = [owned_game]
-    games.get_game.return_value = owned_game
+    store = Mock()
+    store.get_all_events.return_value = [
+        build_add_gog_game_event(owned_game_name),
+        build_mark_game_complete_event(owned_game_name),
+    ]
 
-    cmd = RefreshGogGamesCommand(config=Mock(), games=games)
-    cmd.execute(
-        [{"title": owned_game_name, "id": generate_int(), "tags": ["COMPLETED"]}]
-    )
+    cmd = RefreshGogGamesCommand(config=Mock(), games=store)
+    cmd.execute([build_gog_game_entity(owned_game_name, is_complete=True)])
 
-    games.change_game_state.assert_not_called()
+    store.add_event.assert_not_called()
