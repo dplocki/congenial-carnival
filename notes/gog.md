@@ -40,3 +40,7 @@ ORDER BY title ASC
 
 * data are scattered
 * not only games, also packs etc.
+
+### Other
+
+* Other project reading GoG Galaxy library: https://github.com/AB1908/GOG-Galaxy-Export-Script/
