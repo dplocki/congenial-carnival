@@ -1,10 +1,10 @@
 import logging
 from operator import attrgetter
 
-from models.event import AddSteamGameEvent, DeleteSteamGameEvent
+from models.event import AddSteamGameEvent, DeleteSteamGameEvent, EventType
 from models.game_location import GameLocation
-from services.games import Games
 from services.steam_api import SteamApi
+from services.store import Store
 
 
 get_name = attrgetter("name")
@@ -13,19 +13,15 @@ logger = logging.getLogger(__name__)
 
 class RefreshSteamGamesCommand:
 
-    def __init__(self, games: Games, steam_api: SteamApi):
-        self.games = games
+    def __init__(self, store: Store, steam_api: SteamApi):
+        self.store = store
         self.steam_api = steam_api
 
     def execute(self):
         already_own_games = set(
-            map(
-                get_name,
-                filter(
-                    lambda g: GameLocation.STEAM in g.available,
-                    self.games.get_all_games(),
-                ),
-            )
+            event.name
+            for event in self.store.get_all_events()
+            if event.type == EventType.ADD_GAME and event.where_is == GameLocation.STEAM
         )
 
         for game in self.steam_api.get_owned_games():
@@ -35,7 +31,7 @@ class RefreshSteamGamesCommand:
                 continue
 
             logger.info(f"Adding new game on Steam: {game_name}")
-            self.games.add_game(
+            self.store.add_event(
                 AddSteamGameEvent(
                     name=game_name,
                     api_id=game["appid"],
@@ -45,4 +41,4 @@ class RefreshSteamGamesCommand:
 
         for game_name in already_own_games:
             logger.info(f"The game as not available on Steam anymore: {game_name}")
-            self.games.remove_game(DeleteSteamGameEvent(game_name))
+            self.store.add_event(DeleteSteamGameEvent(game_name))

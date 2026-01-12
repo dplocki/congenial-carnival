@@ -1,4 +1,11 @@
+from typing import Iterable, TypedDict
 import requests
+
+
+class SteamGameData(TypedDict):
+    name: str
+    appid: int
+    rtime_last_played: int
 
 
 class SteamApi:
@@ -22,7 +29,7 @@ class SteamApi:
 
         return {}
 
-    def get_owned_games(self):
+    def get_owned_games(self) -> Iterable[SteamGameData]:
         url = f"{SteamApi.STEAM_BASE_URL}/IPlayerService/GetOwnedGames/v0001/"
         params = {
             "key": self.api_key,
