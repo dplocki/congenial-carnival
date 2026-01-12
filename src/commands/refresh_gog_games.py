@@ -12,7 +12,6 @@ from services.store import Store
 
 
 logger = logging.getLogger(__name__)
-get_name = attrgetter("name")
 COMPLETED_TAG = "COMPLETED"
 
 
