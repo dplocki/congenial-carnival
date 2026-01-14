@@ -96,3 +96,12 @@ class MarkGameCompleteEvent(Event):
     def __init__(self, name: str, timestamp: int = None):
         super().__init__(EventType.COMPLETED_GAME, timestamp)
         object.__setattr__(self, "name", name)
+
+
+@dataclass(frozen=True, init=False)
+class MarkGameAsOtherEvent(Event):
+    name: str
+
+    def __init__(self, name: str, timestamp: int = None):
+        super().__init__(EventType.COMPLETED_GAME, timestamp)
+        object.__setattr__(self, "name", name)
