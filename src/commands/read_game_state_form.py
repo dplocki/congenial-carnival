@@ -1,7 +1,11 @@
 import csv
+import logging
 from pathlib import Path
-from models.event import MarkGameCompleteEvent
+from models.event import MarkGameCompleteEvent, MarkGameAsOtherEvent
 from services.store import Store
+
+
+logger = logging.getLogger(__name__)
 
 
 class ReadGameStateFormCommand:
@@ -11,5 +15,12 @@ class ReadGameStateFormCommand:
     def execute(self, csv_file_path: Path):
         with open(csv_file_path) as csv_file:
             for name, _, complete, not_a_game, different_game in csv.reader(csv_file):
+                print(name, _, complete, not_a_game, different_game)
+
                 if complete.lower() == "yes":
+                    logger.info(f"Marking game complete: {name}")
                     self.store.add_event(MarkGameCompleteEvent(name))
+
+                if not_a_game.lower() == "yes":
+                    logger.info(f"Marking game as not a game: {name}")
+                    self.store.add_event(MarkGameAsOtherEvent(name))
