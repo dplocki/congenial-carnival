@@ -1,0 +1,9 @@
+from enum import StrEnum
+
+
+class EventType(StrEnum):
+    ADD_GAME = "add_game"
+    DELETE_GAME = "delete_game"
+    COMPLETED_GAME = "completed_game"
+    MARK_AS_NOT_GAME = "mark_as_not_game"
+    RENAME_GAME = "rename_game"
