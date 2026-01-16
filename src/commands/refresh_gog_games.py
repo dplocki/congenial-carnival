@@ -1,5 +1,4 @@
 import logging
-from operator import attrgetter
 from typing import Iterable, TypedDict
 from models.event import (
     AddGogGameEvent,
