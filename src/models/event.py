@@ -9,6 +9,8 @@ class EventType(StrEnum):
     ADD_GAME = "add_game"
     DELETE_GAME = "delete_game"
     COMPLETED_GAME = "completed_game"
+    MARK_AS_NOT_GAME = "mark_as_not_game"
+    RENAME_GAME = "rename_game"
 
 
 @dataclass(frozen=True, init=False)
@@ -103,5 +105,16 @@ class MarkGameAsOtherEvent(Event):
     name: str
 
     def __init__(self, name: str, timestamp: int = None):
-        super().__init__(EventType.COMPLETED_GAME, timestamp)
+        super().__init__(EventType.MARK_AS_NOT_GAME, timestamp)
         object.__setattr__(self, "name", name)
+
+
+@dataclass(frozen=True, init=False)
+class RenameGameEvent(Event):
+    old_name: str
+    new_name: str
+
+    def __init__(self, old_name: str, new_name: str, timestamp: int = None):
+        super().__init__(EventType.RENAME_GAME, timestamp)
+        object.__setattr__(self, "old_name", old_name)
+        object.__setattr__(self, "new_name", new_name)
