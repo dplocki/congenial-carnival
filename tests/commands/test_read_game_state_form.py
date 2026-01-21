@@ -1,9 +1,15 @@
+from pathlib import Path
 from unittest.mock import Mock
 
 from models.game_location import GameLocation
 from src.commands.read_game_state_form import ReadGameStateFormCommand
 from models.event import MarkGameCompleteEvent, MarkGameAsOtherEvent, RenameGameEvent
 from tests.utils.data_providers import generate_enum, generate_str
+
+
+def execute_command(csv_file_path: Path):
+    command = ReadGameStateFormCommand()
+    return list(command.execute(csv_file_path))
 
 
 def test_marks_games_complete_for_yes_rows(tmp_path):
@@ -15,13 +21,7 @@ def test_marks_games_complete_for_yes_rows(tmp_path):
         f"{generate_str()},{generate_enum(GameLocation)},no,no,\n"
     )
 
-    store = Mock()
-
-    command = ReadGameStateFormCommand(store)
-    command.execute(csv_file_path)
-
-    store.add_event.assert_called_once()
-    event = store.add_event.call_args[0][0]
+    event = execute_command(csv_file_path)[0]
 
     assert isinstance(event, MarkGameCompleteEvent)
     assert event.name == game_name
@@ -36,13 +36,7 @@ def test_marks_games_as_other_for_not_a_game_yes(tmp_path):
         f"{generate_str()},{generate_enum(GameLocation)},no,no,\n"
     )
 
-    store = Mock()
-
-    command = ReadGameStateFormCommand(store)
-    command.execute(csv_file_path)
-
-    store.add_event.assert_called_once()
-    event = store.add_event.call_args[0][0]
+    event = execute_command(csv_file_path)[0]
 
     assert isinstance(event, MarkGameAsOtherEvent)
     assert event.name == game_name
@@ -58,13 +52,7 @@ def test_renames_games_for_different_game(tmp_path):
         f"{generate_str()},{generate_enum(GameLocation)},no,no,\n"
     )
 
-    store = Mock()
-
-    command = ReadGameStateFormCommand(store)
-    command.execute(csv_file_path)
-
-    store.add_event.assert_called_once()
-    event = store.add_event.call_args[0][0]
+    event = execute_command(csv_file_path)[0]
 
     assert isinstance(event, RenameGameEvent)
     assert event.old_name == game_name

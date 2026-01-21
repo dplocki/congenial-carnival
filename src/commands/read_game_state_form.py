@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class ReadGameStateFormCommand:
-    def __init__(self, store: Store):
-        self.store = store
+    def __init__(self):
+        pass
 
     def execute(self, csv_file_path: Path) -> Generator[Event, None, None]:
         with open(csv_file_path) as csv_file:

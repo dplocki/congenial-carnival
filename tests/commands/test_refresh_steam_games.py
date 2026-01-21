@@ -1,6 +1,7 @@
+from typing import Iterable
 from unittest.mock import Mock
 
-from models.event import AddSteamGameEvent, EventType
+from models.event import AddSteamGameEvent, EventType, Event
 from models.game_location import GameLocation
 from commands.refresh_steam_games import RefreshSteamGamesCommand
 from services.steam_api import SteamGameData
@@ -21,6 +22,11 @@ def build_steam_game_entity(
     }
 
 
+def execute_command(store: Mock, steam_api: Mock) -> Iterable[Event]:
+    command = RefreshSteamGamesCommand(store, steam_api)
+    return list(command.execute())
+
+
 def test_execute_adds_new_steam_games():
     new_game_name = generate_str()
     new_game_api_id = generate_int()
@@ -34,11 +40,10 @@ def test_execute_adds_new_steam_games():
     store = Mock()
     store.get_all_events.return_value = []
 
-    command = RefreshSteamGamesCommand(store, steam_api)
-    command.execute()
+    result = execute_command(store, steam_api)
 
-    assert store.add_event.call_count == 1
-    event = store.add_event.call_args[0][0]
+    assert len(result) == 1
+    event = result[0]
     assert isinstance(event, AddSteamGameEvent)
     assert event.name == new_game_name
     assert event.api_id == new_game_api_id
@@ -52,12 +57,11 @@ def test_execute_skips_already_owned():
     steam_api.get_owned_games.return_value = [build_steam_game_entity(owned_game_title)]
 
     store = Mock()
-    store.get_all_events.return_value = []
+    store.get_all_events.return_value = [build_add_steam_game_event(owned_game_title)]
 
-    cmd = RefreshSteamGamesCommand(store, steam_api)
-    cmd.execute()
+    result = execute_command(store, steam_api)
 
-    assert store.add_game.call_count == 0
+    assert len(result) == 0
 
 
 def test_execute_detect_deleted_steam_games():
@@ -69,11 +73,10 @@ def test_execute_detect_deleted_steam_games():
     store = Mock()
     store.get_all_events.return_value = [build_add_steam_game_event(owned_game_title)]
 
-    cmd = RefreshSteamGamesCommand(store, steam_api)
-    cmd.execute()
+    result = execute_command(store, steam_api)
 
-    assert store.add_event.call_count == 1
-    event = store.add_event.call_args[0][0]
+    assert len(result) == 1
+    event = result[0]
     assert event.type == EventType.DELETE_GAME
     assert event.where_is == GameLocation.STEAM
     assert event.name == owned_game_title
