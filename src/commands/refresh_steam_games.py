@@ -31,14 +31,12 @@ class RefreshSteamGamesCommand:
                 continue
 
             logger.info(f"Adding new game on Steam: {game_name}")
-            self.store.add_event(
-                AddSteamGameEvent(
-                    name=game_name,
-                    api_id=game["appid"],
-                    last_played=game["rtime_last_played"],
-                )
+            yield AddSteamGameEvent(
+                name=game_name,
+                api_id=game["appid"],
+                last_played=game["rtime_last_played"],
             )
 
         for game_name in already_own_games:
             logger.info(f"The game as not available on Steam anymore: {game_name}")
-            self.store.add_event(DeleteSteamGameEvent(game_name))
+            yield DeleteSteamGameEvent(game_name)
