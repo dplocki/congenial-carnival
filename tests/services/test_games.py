@@ -145,7 +145,7 @@ def test_rename_should_reduce_game_set():
         },
         {
             "type": EventType.RENAME_GAME,
-            "old_name": new_name,
+            "old_name": old_name,
             "new_name": new_name,
         },
     ]
@@ -157,7 +157,7 @@ def test_rename_should_reduce_game_set():
     game = all_games[0]
     assert game.name == new_name
     assert len(game.aliases) == 1
-    assert game.aliases[0] == old_name
+    assert old_name in game.aliases
     assert len(game.available) == 1
     assert game.available[0] == game_location
 

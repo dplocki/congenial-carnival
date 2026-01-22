@@ -63,3 +63,17 @@ class Games:
                 self.games[game_name] = Game(
                     game.name, game.available, is_complete=True
                 )
+
+            elif event["type"] == EventType.RENAME_GAME:
+                old_game_name = event["old_name"]
+                new_game_name = event["new_name"]
+
+                old_game = self.games[old_game_name]
+                aliases = old_game.aliases
+                aliases.add(old_game_name)
+
+                self.games[new_game_name] = Game(
+                    new_game_name, old_game.available, aliases, old_game.is_complete
+                )
+
+                del self.games[old_game_name]
