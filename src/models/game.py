@@ -6,4 +6,5 @@ from models.game_location import GameLocation
 class Game:
     name: str
     available: list[GameLocation] = field(default_factory=list)
+    aliases: list[str] = field(default_factory=set)
     is_complete: bool = False

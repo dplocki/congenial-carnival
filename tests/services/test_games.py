@@ -57,7 +57,7 @@ def test_get_all_games_aggregates_events():
     assert game_from_single_sources.available == [GameLocation.OTHER]
 
 
-def test_get_deleted_games_should_not_appear():
+def test_deleted_games_should_not_appear():
     removed_game_title = generate_str()
     removed_game_location = generate_enum(GameLocation)
     store = Mock()
@@ -81,7 +81,7 @@ def test_get_deleted_games_should_not_appear():
     assert len(get_all_games) == 0
 
 
-def test_get_deleted_games_should_affect_only_game_location():
+def test_deleted_games_should_affect_only_game_location():
     removed_game_title = generate_str()
     store = Mock()
     store.get_all_events.return_value = [
@@ -103,14 +103,13 @@ def test_get_deleted_games_should_affect_only_game_location():
     ]
 
     games_service = Games(store)
+    all_games = list(games_service.get_all_games())
 
-    get_all_games = list(games_service.get_all_games())
-
-    assert len(get_all_games) == 1
-    assert get_all_games[0].available == [GameLocation.GOG]
+    assert len(all_games) == 1
+    assert all_games[0].available == [GameLocation.GOG]
 
 
-def test_get_game_marks_game_as_complete():
+def test_game_marks_game_as_complete():
     completed_game_title = generate_str()
     store = Mock()
     store.get_all_events.return_value = [
@@ -131,3 +130,39 @@ def test_get_game_marks_game_as_complete():
 
     assert game is not None
     assert game.is_complete
+
+
+def test_rename_should_reduce_game_set():
+    gog_name = generate_str()
+    steam_name = generate_str()
+    store = Mock()
+    store.get_all_events.return_value = [
+        {
+            "type": EventType.ADD_GAME,
+            "name": gog_name,
+            "where_is": GameLocation.GOG,
+        },
+        {
+            "type": EventType.ADD_GAME,
+            "name": steam_name,
+            "where_is": GameLocation.STEAM,
+        },
+        {
+            "type": EventType.RENAME_GAME,
+            "old_name": steam_name,
+            "new_name": gog_name,
+        }
+    ]
+
+    games_service = Games(store)
+    all_games = list(games_service.get_all_games())
+
+    assert len(all_games) == 1
+    game = all_games[0]
+    assert game.name == gog_name
+    assert len(game.available) == 2
+    assert GameLocation.GOG in game.available
+    assert GameLocation.STEAM in game.available
+    assert len(game.aliases) == 1
+    assert steam_name in game.aliases
+
