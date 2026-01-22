@@ -133,6 +133,36 @@ def test_game_marks_game_as_complete():
 
 
 def test_rename_should_reduce_game_set():
+    old_name = generate_str()
+    new_name = generate_str()
+    game_location = generate_enum(GameLocation)
+    store = Mock()
+    store.get_all_events.return_value = [
+        {
+            "type": EventType.ADD_GAME,
+            "name": old_name,
+            "where_is": game_location,
+        },
+        {
+            "type": EventType.RENAME_GAME,
+            "old_name": new_name,
+            "new_name": new_name,
+        },
+    ]
+
+    games_service = Games(store)
+    all_games = list(games_service.get_all_games())
+
+    assert len(all_games) == 1
+    game = all_games[0]
+    assert game.name == new_name
+    assert len(game.aliases) == 1
+    assert game.aliases[0] == old_name
+    assert len(game.available) == 1
+    assert game.available[0] == game_location
+
+
+def test_rename_should_reduce_games_set():
     gog_name = generate_str()
     steam_name = generate_str()
     store = Mock()
@@ -151,7 +181,7 @@ def test_rename_should_reduce_game_set():
             "type": EventType.RENAME_GAME,
             "old_name": steam_name,
             "new_name": gog_name,
-        }
+        },
     ]
 
     games_service = Games(store)
@@ -165,4 +195,3 @@ def test_rename_should_reduce_game_set():
     assert GameLocation.STEAM in game.available
     assert len(game.aliases) == 1
     assert steam_name in game.aliases
-
