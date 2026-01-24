@@ -44,7 +44,7 @@ class Games:
                 if game_name not in self.games:
                     self.games[game_name] = Game(event["name"])
 
-                self.games[game_name].available.append(event["where_is"])
+                self.games[game_name].available.add(event["where_is"])
 
             elif event["type"] == EventType.DELETE_GAME:
                 game_name = event["name"]
@@ -74,7 +74,7 @@ class Games:
                 aliases = old_game.aliases | new_game.aliases
                 aliases.add(old_game_name)
 
-                available = old_game.available + new_game.available
+                available = old_game.available | new_game.available
                 is_complete = old_game.is_complete or new_game.is_complete
 
                 self.games[new_game_name] = Game(new_game_name, available, aliases, is_complete)

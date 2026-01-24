@@ -54,7 +54,7 @@ def test_get_all_games_aggregates_events():
     assert GameLocation.GOG in game_from_two_sources.available
 
     game_from_single_sources = next(g for g in all_games if g.name == single_game_title)
-    assert game_from_single_sources.available == [GameLocation.OTHER]
+    assert game_from_single_sources.available == {GameLocation.OTHER}
 
 
 def test_deleted_games_should_not_appear():
@@ -106,7 +106,7 @@ def test_deleted_games_should_affect_only_game_location():
     all_games = list(games_service.get_all_games())
 
     assert len(all_games) == 1
-    assert all_games[0].available == [GameLocation.GOG]
+    assert all_games[0].available == {GameLocation.GOG}
 
 
 def test_game_marks_game_as_complete():
@@ -159,7 +159,7 @@ def test_rename_should_reduce_game_set():
     assert len(game.aliases) == 1
     assert old_name in game.aliases
     assert len(game.available) == 1
-    assert game.available[0] == game_location
+    assert game.available == {game_location}
 
 
 def test_rename_should_reduce_games_set():
