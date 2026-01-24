@@ -68,12 +68,15 @@ class Games:
                 old_game_name = event["old_name"]
                 new_game_name = event["new_name"]
 
+                new_game = self.games.get(new_game_name, Game(new_game_name))
+
                 old_game = self.games[old_game_name]
-                aliases = old_game.aliases
+                aliases = old_game.aliases | new_game.aliases
                 aliases.add(old_game_name)
 
-                self.games[new_game_name] = Game(
-                    new_game_name, old_game.available, aliases, old_game.is_complete
-                )
+                available = old_game.available + new_game.available
+                is_complete = old_game.is_complete or new_game.is_complete
+
+                self.games[new_game_name] = Game(new_game_name, available, aliases, is_complete)
 
                 del self.games[old_game_name]
