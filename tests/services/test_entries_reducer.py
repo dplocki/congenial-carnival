@@ -49,11 +49,15 @@ def test_get_all_entries_aggregates_events():
 
     assert len(all_entries) == 2
 
-    game_from_two_sources = next(g for g in all_entries if g.name == repeating_game_title)
+    game_from_two_sources = next(
+        g for g in all_entries if g.name == repeating_game_title
+    )
     assert GameLocation.STEAM in game_from_two_sources.available
     assert GameLocation.GOG in game_from_two_sources.available
 
-    game_from_single_sources = next(g for g in all_entries if g.name == single_game_title)
+    game_from_single_sources = next(
+        g for g in all_entries if g.name == single_game_title
+    )
     assert game_from_single_sources.available == {GameLocation.OTHER}
 
 
