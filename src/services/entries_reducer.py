@@ -1,39 +1,21 @@
 from typing import Dict, Iterable
-from models.event import AddGameEvent, DeleteGameEvent, EventType, MarkGameCompleteEvent
-from models.game import Game
+from models.event import EventType
+from models.entry import Entry
 from models.event import Event
 from services.store import Store
 
 
-class Games:
+class EntriesReducer:
 
     def __init__(self, store: Store):
         self.store = store
-        self.games: Dict[str, Game] = None
+        self.games: Dict[str, Entry] = None
 
-    def get_all_games(self) -> Iterable[Game]:
+    def get_all_entries(self) -> Iterable[Entry]:
         if self.games is None:
             self.__build_games_directory()
 
         return self.games.values()
-
-    def get_game(self, title: str) -> Game:
-        if self.games is None:
-            self.__build_games_directory()
-
-        return self.games.get(title, None)
-
-    def add_game(self, event: AddGameEvent) -> None:
-        self.store.add_event(event)
-        self.__reduce_event(event)
-
-    def remove_game(self, event: DeleteGameEvent) -> None:
-        self.store.add_event(event)
-        self.__reduce_event(event)
-
-    def change_game_state(self, event: MarkGameCompleteEvent) -> None:
-        self.store.add_event(event)
-        self.__reduce_event(event)
 
     def __build_games_directory(self) -> None:
         self.games = {}
@@ -46,7 +28,7 @@ class Games:
             game_name = event["name"]
 
             if game_name not in self.games:
-                self.games[game_name] = Game(event["name"])
+                self.games[game_name] = Entry(event["name"])
 
             self.games[game_name].available.add(event["where_is"])
 
@@ -64,13 +46,13 @@ class Games:
         elif event["type"] == EventType.COMPLETED_GAME:
             game_name = event["name"]
             game = self.games[game_name]
-            self.games[game_name] = Game(game.name, game.available, is_complete=True)
+            self.games[game_name] = Entry(game.name, game.available, is_complete=True)
 
         elif event["type"] == EventType.RENAME_GAME:
             old_game_name = event["old_name"]
             new_game_name = event["new_name"]
 
-            new_game = self.games.get(new_game_name, Game(new_game_name))
+            new_game = self.games.get(new_game_name, Entry(new_game_name))
 
             old_game = self.games[old_game_name]
             aliases = old_game.aliases | new_game.aliases
@@ -79,7 +61,7 @@ class Games:
             available = old_game.available | new_game.available
             is_complete = old_game.is_complete or new_game.is_complete
 
-            self.games[new_game_name] = Game(
+            self.games[new_game_name] = Entry(
                 new_game_name, available, aliases, is_complete
             )
 

@@ -4,7 +4,7 @@ import string
 from typing import Type
 
 from models.event import AddGameEvent, Event
-from models.game import Game
+from models.entry import Entry
 from models.game_location import GameLocation
 
 
@@ -34,10 +34,10 @@ def generate_event(event_type: Type, **kwargs) -> Event:
     raise ValueError(f"Unsupported event type: {event_type}")
 
 
-def generate_game(**kwargs) -> Game:
+def generate_entry(**kwargs) -> Entry:
     """Generate a Game instance with random or specified attributes."""
     name = kwargs.get("name", generate_str())
     available = kwargs.get("available", [])
     is_complete = kwargs.get("is_complete", False)
 
-    return Game(name=name, available=available, is_complete=is_complete)
+    return Entry(name=name, available=available, is_complete=is_complete)
