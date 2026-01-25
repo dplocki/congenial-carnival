@@ -1,6 +1,7 @@
 from typing import Dict, Iterable
 from models.event import AddGameEvent, DeleteGameEvent, EventType, MarkGameCompleteEvent
 from models.game import Game
+from models.event import Event
 from services.store import Store
 
 
@@ -24,61 +25,62 @@ class Games:
 
     def add_game(self, event: AddGameEvent) -> None:
         self.store.add_event(event)
-        self.games = None
+        self.__reduce_event(event)
 
     def remove_game(self, event: DeleteGameEvent) -> None:
         self.store.add_event(event)
-        self.games = None
+        self.__reduce_event(event)
 
     def change_game_state(self, event: MarkGameCompleteEvent) -> None:
         self.store.add_event(event)
-        self.games = None
+        self.__reduce_event(event)
 
     def __build_games_directory(self) -> None:
         self.games = {}
 
         for event in self.store.get_all_events():
-            if event["type"] == EventType.ADD_GAME:
-                game_name = event["name"]
+            self.__reduce_event(event)
 
-                if game_name not in self.games:
-                    self.games[game_name] = Game(event["name"])
+    def __reduce_event(self, event: Event) -> None:
+        if event["type"] == EventType.ADD_GAME:
+            game_name = event["name"]
 
-                self.games[game_name].available.add(event["where_is"])
+            if game_name not in self.games:
+                self.games[game_name] = Game(event["name"])
 
-            elif event["type"] == EventType.DELETE_GAME:
-                game_name = event["name"]
-                location = event["where_is"]
+            self.games[game_name].available.add(event["where_is"])
 
-                if game_name not in self.games:
-                    continue
+        elif event["type"] == EventType.DELETE_GAME:
+            game_name = event["name"]
+            location = event["where_is"]
 
-                self.games[game_name].available.remove(location)
-                if not self.games[game_name].available:
-                    del self.games[game_name]
+            if game_name not in self.games:
+                return
 
-            elif event["type"] == EventType.COMPLETED_GAME:
-                game_name = event["name"]
-                game = self.games[game_name]
-                self.games[game_name] = Game(
-                    game.name, game.available, is_complete=True
-                )
+            self.games[game_name].available.remove(location)
+            if not self.games[game_name].available:
+                del self.games[game_name]
 
-            elif event["type"] == EventType.RENAME_GAME:
-                old_game_name = event["old_name"]
-                new_game_name = event["new_name"]
+        elif event["type"] == EventType.COMPLETED_GAME:
+            game_name = event["name"]
+            game = self.games[game_name]
+            self.games[game_name] = Game(game.name, game.available, is_complete=True)
 
-                new_game = self.games.get(new_game_name, Game(new_game_name))
+        elif event["type"] == EventType.RENAME_GAME:
+            old_game_name = event["old_name"]
+            new_game_name = event["new_name"]
 
-                old_game = self.games[old_game_name]
-                aliases = old_game.aliases | new_game.aliases
-                aliases.add(old_game_name)
+            new_game = self.games.get(new_game_name, Game(new_game_name))
 
-                available = old_game.available | new_game.available
-                is_complete = old_game.is_complete or new_game.is_complete
+            old_game = self.games[old_game_name]
+            aliases = old_game.aliases | new_game.aliases
+            aliases.add(old_game_name)
 
-                self.games[new_game_name] = Game(
-                    new_game_name, available, aliases, is_complete
-                )
+            available = old_game.available | new_game.available
+            is_complete = old_game.is_complete or new_game.is_complete
 
-                del self.games[old_game_name]
+            self.games[new_game_name] = Game(
+                new_game_name, available, aliases, is_complete
+            )
+
+            del self.games[old_game_name]
