@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Generator
 from models.event import MarkGameCompleteEvent, MarkGameAsOtherEvent, RenameGameEvent
 from models.event import Event
-from services.store import Store
 
 
 logger = logging.getLogger(__name__)
