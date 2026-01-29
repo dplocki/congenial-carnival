@@ -40,7 +40,6 @@ def generate_entry(**kwargs) -> Entry:
     available = kwargs.get("available", [])
     is_complete = kwargs.get("is_complete", False)
     all_names = kwargs.get("all_names", set())
-    all_names.add(name)
 
     return Entry(
         name=name, available=available, is_complete=is_complete, all_names=all_names

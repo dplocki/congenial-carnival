@@ -40,8 +40,8 @@ def test_adds_new_epic_game_when_not_owned():
 
 def test_skips_existing_epic_game():
     owned_game_name = generate_str()
-    entries_reducer = build_entry_reducer(generate_entry(name=owned_game_name))
+    entries_reducer = build_entry_reducer(build_epic_entry(name=owned_game_name))
 
     result = execute_command(entries_reducer, [owned_game_name])
 
-    return len(result) == 0
+    assert len(result) == 0
