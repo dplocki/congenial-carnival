@@ -11,16 +11,16 @@ logger = logging.getLogger(__name__)
 
 class RefreshEpicGamesCommand:
     def __init__(self, entries_reducer: EntriesReducer):
-        self.store = entries_reducer
+        self.entries_reducer = entries_reducer
 
     def execute(self, games_titles: Iterable[str]) -> Generator[Event, None, None]:
         existing_titles = set()
-        for entry in self.store.get_all_entries():
+        for entry in self.entries_reducer.get_all_entries():
             if GameLocation.EPIC not in entry.available:
                 continue
 
             existing_titles.update(entry.all_names)
 
-        for title in set(games_titles) ^ existing_titles:
+        for title in set(games_titles) - existing_titles:
             logger.info(f"Adding new game on Epic: {title}")
             yield AddEpicGameEvent(title)
