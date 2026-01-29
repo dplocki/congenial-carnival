@@ -1,7 +1,7 @@
 import logging
 from models.event import Event
 from typing import Generator, Iterable
-from models.event import AddEpicGameEvent, DeleteGameEvent, EventType
+from models.event import AddEpicGameEvent
 from models.game_location import GameLocation
 from services.entries_reducer import EntriesReducer
 

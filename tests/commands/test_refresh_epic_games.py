@@ -2,9 +2,9 @@ from typing import Iterable
 from unittest.mock import Mock
 
 from models.entry import Entry
+from models.event.add_game import AddEpicGameEvent
 from services.entries_reducer import EntriesReducer
 from src.commands.refresh_epic_games import RefreshEpicGamesCommand
-from models.event import AddEpicGameEvent, DeleteGameEvent
 from models.game_location import GameLocation
 from models.event import Event
 from tests.utils.data_providers import generate_entry, generate_str
@@ -34,6 +34,7 @@ def test_adds_new_epic_game_when_not_owned():
 
     event = execute_command(entries_reducer, [new_game_name])[0]
 
+    assert isinstance(event, AddEpicGameEvent)
     assert event.name == new_game_name
 
 
