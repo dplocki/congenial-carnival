@@ -161,8 +161,9 @@ def test_rename_should_reduce_game_set():
     assert len(all_entries) == 1
     game = all_entries[0]
     assert game.name == new_name
-    assert len(game.aliases) == 1
-    assert old_name in game.aliases
+    assert len(game.all_names) == 2
+    assert new_name in game.all_names
+    assert old_name in game.all_names
     assert len(game.available) == 1
     assert game.available == {game_location}
 
@@ -198,5 +199,6 @@ def test_rename_should_reduce_games_set():
     assert len(game.available) == 2
     assert GameLocation.GOG in game.available
     assert GameLocation.STEAM in game.available
-    assert len(game.aliases) == 1
-    assert steam_name in game.aliases
+    assert len(game.all_names) == 2
+    assert gog_name in game.all_names
+    assert steam_name in game.all_names

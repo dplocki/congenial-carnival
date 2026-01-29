@@ -28,7 +28,8 @@ class EntriesReducer:
             game_name = event["name"]
 
             if game_name not in self.entries:
-                self.entries[game_name] = Entry(event["name"])
+                self.entries[game_name] = Entry(game_name)
+                self.entries[game_name].all_names.add(game_name)
 
             self.entries[game_name].available.add(event["where_is"])
 
@@ -52,17 +53,21 @@ class EntriesReducer:
             old_game_name = event["old_name"]
             new_game_name = event["new_name"]
 
-            new_game = self.entries.get(new_game_name, Entry(new_game_name))
+            new_game = self.entries.get(new_game_name, Entry(name=new_game_name))
 
             old_game = self.entries[old_game_name]
-            aliases = old_game.aliases | new_game.aliases
-            aliases.add(old_game_name)
+            new_all_names = old_game.all_names | new_game.all_names
 
-            available = old_game.available | new_game.available
-            is_complete = old_game.is_complete or new_game.is_complete
+            new_available = old_game.available | new_game.available
+            new_is_complete = old_game.is_complete or new_game.is_complete
+            new_is_game = old_game.is_game or old_game.is_game
 
             self.entries[new_game_name] = Entry(
-                new_game_name, available, aliases, is_complete
+                name=new_game_name,
+                all_names=new_all_names,
+                available=new_available,
+                is_complete=new_is_complete,
+                is_game=new_is_game,
             )
 
             del self.entries[old_game_name]

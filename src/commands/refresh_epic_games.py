@@ -19,8 +19,7 @@ class RefreshEpicGamesCommand:
             if GameLocation.EPIC not in entry.available:
                 continue
 
-            existing_titles.add(entry.name)
-            existing_titles.update(entry.aliases)
+            existing_titles.update(entry.all_names)
 
         for title in set(games_titles) ^ existing_titles:
             logger.info(f"Adding new game on Epic: {title}")
