@@ -69,7 +69,7 @@ def test_execute_adds_new_steam_games():
 
 def test_execute_skips_already_owned():
     owned_game_title = generate_str()
-    entries_reduce = build_entry_reducer(build_steam_game_entity(name=owned_game_title))
+    entries_reduce = build_entry_reducer(build_steam_entry(name=owned_game_title))
     steam_api = build_steam_api(build_steam_game_entity(owned_game_title))
 
     result = execute_command(entries_reduce, steam_api)
@@ -79,7 +79,7 @@ def test_execute_skips_already_owned():
 
 def test_execute_detect_deleted_steam_games():
     owned_game_title = generate_str()
-    entries_reduce = build_entry_reducer(build_steam_game_entity(name=owned_game_title))
+    entries_reduce = build_entry_reducer(build_steam_entry(name=owned_game_title))
     steam_api = build_steam_api()
 
     result = execute_command(entries_reduce, steam_api)
