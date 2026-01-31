@@ -8,6 +8,7 @@ from models.event import (
 )
 from models.game_location import GameLocation
 from models.event import Event
+from services.entries_reducer import EntriesReducer
 from services.store import Store
 
 
@@ -22,18 +23,24 @@ class GameData(TypedDict):
 
 
 class RefreshGogGamesCommand:
-    def __init__(self, store: Store):
-        self.store: Store = store
+    def __init__(self, reducer: EntriesReducer):
+        self.reducer: EntriesReducer = reducer
 
     def execute(self, games_data: Iterable[GameData]) -> Generator[Event, None, None]:
         already_own_gog_games = set()
         completed_games = set()
 
-        for event in self.store.get_all_events():
-            if event.type == EventType.ADD_GAME and event.where_is == GameLocation.GOG:
-                already_own_gog_games.add(event.name)
-            elif event.type == EventType.COMPLETED_GAME:
-                completed_games.add(event.name)
+        for entry in self.reducer.get_all_entries():
+            if not entry.is_game:
+                continue
+
+            if GameLocation.GOG not in entry.available:
+                continue
+
+            already_own_gog_games.update(entry.all_names)
+
+            if entry.is_complete:
+                completed_games.update(entry.all_names)
 
         for game_datum in games_data:
             title = game_datum["title"].strip()
