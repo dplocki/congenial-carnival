@@ -3,11 +3,10 @@ from unittest.mock import Mock
 
 from models.entry import Entry
 from models.event.add_game import AddEpicGameEvent
-from services.entries_reducer import EntriesReducer
 from src.commands.refresh_epic_games import RefreshEpicGamesCommand
 from models.game_location import GameLocation
 from models.event import Event
-from tests.utils.data_providers import generate_entry, generate_str
+from tests.utils.data_providers import build_entry_reducer, generate_entry, generate_str
 
 
 def execute_command(
@@ -15,12 +14,6 @@ def execute_command(
 ) -> Iterable[Event]:
     command = RefreshEpicGamesCommand(entries_reducer)
     return list(command.execute(games_titles))
-
-
-def build_entry_reducer(*args: Entry) -> EntriesReducer:
-    entries_reducer = Mock()
-    entries_reducer.get_all_entries.return_value = args
-    return entries_reducer
 
 
 def build_epic_entry(**kwargs) -> Entry:

@@ -2,10 +2,12 @@ from enum import Enum
 import random
 import string
 from typing import Type
+from unittest.mock import Mock
 
 from models.event import AddGameEvent, Event
 from models.entry import Entry
 from models.game_location import GameLocation
+from services.entries_reducer import EntriesReducer
 
 
 def generate_str(length: int = 10) -> str:
@@ -44,3 +46,9 @@ def generate_entry(**kwargs) -> Entry:
     return Entry(
         name=name, available=available, is_complete=is_complete, all_names=all_names
     )
+
+
+def build_entry_reducer(*args: Entry) -> EntriesReducer:
+    entries_reducer = Mock()
+    entries_reducer.get_all_entries.return_value = args
+    return entries_reducer
