@@ -1,16 +1,28 @@
-from services.games import Games
+from typing import Generator, TypedDict
+from services.entries_reducer import EntriesReducer
+
+
+class GameStateFormData(TypedDict):
+    name: str
+    platforms: str
+    is_complete: bool
+    is_not_a_game: bool
+    is_different_game: bool
 
 
 class GameStateFormQuery:
-    def __init__(self, games: Games):
-        self._games = games
+    def __init__(self, entries_reducer: EntriesReducer):
+        self.entries_reducer = entries_reducer
 
-    def execute(self):
-        games = list(self._games.get_all_games())
-        games.sort(key=lambda g: g.name.lower())
+    def execute(self) -> Generator[GameStateFormData, None, None]:
+        for entry in self.entries_reducer.get_all_games():
+            if entry.is_not_a_game:
+                continue
 
-        print("Name,Platforms,Complete,Is not a game,Is different game")
-        for game in games:
-            print(
-                f'"{game.name}", {" ".join(game.available)}, {"Yes" if game.is_complete else "No"},No,'
+            yield GameStateFormData(
+                name=entry.name,
+                platforms=" ".join(entry.available),
+                is_complete=entry.is_complete,
+                is_not_a_game=False,
+                is_different_game=False,
             )
