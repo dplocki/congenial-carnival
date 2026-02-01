@@ -3,13 +3,11 @@ from typing import Generator, Iterable, TypedDict
 from models.event import (
     AddGogGameEvent,
     DeleteGogGameEvent,
-    EventType,
     MarkGameCompleteEvent,
 )
 from models.game_location import GameLocation
 from models.event import Event
 from services.entries_reducer import EntriesReducer
-from services.store import Store
 
 
 logger = logging.getLogger(__name__)
