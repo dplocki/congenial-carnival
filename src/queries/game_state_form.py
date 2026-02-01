@@ -15,8 +15,8 @@ class GameStateFormQuery:
         self.entries_reducer = entries_reducer
 
     def execute(self) -> Generator[GameStateFormData, None, None]:
-        for entry in self.entries_reducer.get_all_games():
-            if entry.is_not_a_game:
+        for entry in self.entries_reducer.get_all_entries():
+            if not entry.is_game:
                 continue
 
             yield GameStateFormData(
