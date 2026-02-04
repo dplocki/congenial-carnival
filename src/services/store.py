@@ -11,6 +11,7 @@ from models.event import (
     EventType,
     MarkGameCompleteEvent,
 )
+from models.event.other import MarkGameAsOtherEvent, RenameGameEvent
 from models.game_location import GameLocation
 
 
@@ -51,5 +52,9 @@ def parse_event(data: dict):
         return DeleteGameEvent(**data)
     elif event_type == EventType.COMPLETED_GAME:
         return MarkGameCompleteEvent(**data)
+    elif event_type == EventType.RENAME_GAME:
+        return RenameGameEvent(**data)
+    elif event_type == EventType.MARK_AS_NOT_GAME:
+        return MarkGameAsOtherEvent(**data)
 
     raise ValueError(f"Unknown event type: {event_type}")
