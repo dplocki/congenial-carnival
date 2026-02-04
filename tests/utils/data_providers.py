@@ -3,10 +3,12 @@ import random
 import string
 from typing import Type
 from unittest.mock import Mock
+import inspect
 
-from models.event import AddGameEvent, Event
+from models.event import Event
 from models.entry import Entry
 from models.game_location import GameLocation
+from models.note_type import NoteType
 from services.entries_reducer import EntriesReducer
 
 
@@ -26,14 +28,39 @@ def generate_enum[E: Enum](enum_type: type[E]) -> E:
 
 
 def generate_event(event_type: Type, **kwargs) -> Event:
-    """Generate a random event of the specified type."""
-    if event_type == AddGameEvent:
-        name = kwargs.get("name", generate_str())
-        where_is = kwargs.get("where_is", generate_enum(GameLocation))
-        timestamp = kwargs.get("timestamp", random.randint(1, 1_000_000))
-        return AddGameEvent(name, where_is, timestamp)
+    sig = inspect.signature(event_type.__init__)
+    init_kwargs = {}
 
-    raise ValueError(f"Unsupported event type: {event_type}")
+    for param_name, param in sig.parameters.items():
+        if param_name == "self" or param_name == "timestamp":
+            continue
+
+        if param_name in kwargs:
+            init_kwargs[param_name] = kwargs[param_name]
+        elif param.default is inspect.Parameter.empty:
+            if param_name in (
+                "name",
+                "game_name",
+                "old_name",
+                "new_name",
+                "different_game",
+            ):
+                init_kwargs[param_name] = generate_str()
+            elif param_name in ("api_id",):
+                init_kwargs[param_name] = str(generate_int())
+            elif param_name in ("gog_id", "last_played"):
+                init_kwargs[param_name] = generate_int()
+            elif param_name in ("where_is",):
+                init_kwargs[param_name] = generate_enum(GameLocation)
+            elif param_name in ("note_type",):
+                init_kwargs[param_name] = generate_enum(NoteType)
+            else:
+                init_kwargs[param_name] = generate_str()
+
+    if "timestamp" in kwargs:
+        init_kwargs["timestamp"] = kwargs["timestamp"]
+
+    return event_type(**init_kwargs)
 
 
 def generate_entry(**kwargs) -> Entry:
