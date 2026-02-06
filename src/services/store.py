@@ -1,4 +1,4 @@
-from typing import Iterable, List
+from typing import Iterable
 from tinydb import TinyDB
 
 from models.event import (
@@ -22,13 +22,17 @@ class Store:
         self.table_events = self.db.table("events")
 
     def add_event(self, event: AddGameEvent):
+        self._load_saved_events()
+        self.events.append(event)
         self.table_events.insert(event.__dict__)
 
     def get_all_events(self) -> Iterable[Event]:
+        self._load_saved_events()
+        return self.events
+
+    def _load_saved_events(self):
         if self.events is None:
             self.events = list(map(parse_event, self.table_events.all()))
-
-        return self.events
 
 
 def parse_event(data: dict):

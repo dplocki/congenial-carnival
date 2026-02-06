@@ -1,3 +1,4 @@
+import json
 import logging
 import importlib
 import inspect
@@ -64,18 +65,24 @@ if __name__ == "__main__":
     logging.info("Configuration loaded")
 
     container = build_container(config)
+    store = container.resolve(Store)
 
     # Load games
-    container.resolve(RefreshSteamGamesCommand).execute()
-    container.resolve(RefreshGogGamesCommand).execute(
-        get_file_content(Path("data/gog_games_20260105.json"))
-    )
-    container.resolve(RefreshEpicGamesCommand).execute(
-        get_file_content(Path("data/epic_games_20260109.json"))
-    )
+    for event in container.resolve(RefreshSteamGamesCommand).execute():
+        store.add_event(event)
+
+    for event in container.resolve(RefreshGogGamesCommand).execute(
+        json.loads(get_file_content(Path("data/gog_games_20260105.json")))
+    ):
+        store.add_event(event)
+
+    for event in container.resolve(RefreshEpicGamesCommand).execute(
+        json.loads(get_file_content(Path("data/epic_games_20260109.json")))
+    ):
+        store.add_event(event)
 
     # Queries
     with open("form.csv", "w", encoding="utf-8") as file:
-        container.resolve(ToCsvPresenter()).execute(
+        container.resolve(ToCsvPresenter).present(
             container.resolve(GameStateFormQuery).execute(), file
         )
