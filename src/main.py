@@ -1,14 +1,16 @@
 import logging
 import importlib
 import inspect
+from pathlib import Path
 import pkgutil
 from typing import Generator
 from commands.refresh_epic_games import RefreshEpicGamesCommand
 from commands.refresh_gog_games import RefreshGogGamesCommand
 from commands.refresh_steam_games import RefreshSteamGamesCommand
-from queries.owned_games import OwnedGamesQuery
+from presenters.to_csv import ToCsvPresenter
+from queries.game_state_form import GameStateFormQuery
 from services.config import Configuration, load_config
-from services.games import Games
+from services.entries_reducer import EntriesReducer
 from services.steam_api import SteamApi
 from services.store import Store
 from punq import Container
@@ -26,10 +28,15 @@ def get_classes_from(package_name: str) -> Generator[type, None, None]:
         )
 
 
+def get_file_content(file_path: Path) -> str:
+    with open(file_path, "r", encoding="utf-8") as file:
+        return file.read()
+
+
 def build_container(config: Configuration) -> Container:
     container = Container()
     container.register(Configuration, instance=config)
-    container.register(Games)
+    container.register(EntriesReducer)
     container.register(
         SteamApi,
         factory=lambda: SteamApi(config.get_steam_api_key(), config.get_steam_id()),
@@ -41,6 +48,9 @@ def build_container(config: Configuration) -> Container:
 
     for query_class in get_classes_from("queries"):
         container.register(query_class)
+
+    for presenter_class in get_classes_from("presenters"):
+        container.register(presenter_class)
 
     return container
 
@@ -56,9 +66,16 @@ if __name__ == "__main__":
     container = build_container(config)
 
     # Load games
-    # container.resolve(RefreshSteamGamesCommand).execute()
-    # container.resolve(RefreshGogGamesCommand).execute([])
-    # container.resolve(RefreshEpicGamesCommand).execute([])
+    container.resolve(RefreshSteamGamesCommand).execute()
+    container.resolve(RefreshGogGamesCommand).execute(
+        get_file_content(Path("data/gog_games_20260105.json"))
+    )
+    container.resolve(RefreshEpicGamesCommand).execute(
+        get_file_content(Path("data/epic_games_20260109.json"))
+    )
 
     # Queries
-    container.resolve(OwnedGamesQuery).execute()
+    with open("form.csv", "w", encoding="utf-8") as file:
+        container.resolve(ToCsvPresenter()).execute(
+            container.resolve(GameStateFormQuery).execute(), file
+        )
