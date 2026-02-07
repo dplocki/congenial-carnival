@@ -10,6 +10,7 @@ from commands.refresh_gog_games import RefreshGogGamesCommand
 from commands.refresh_steam_games import RefreshSteamGamesCommand
 from presenters.to_csv import ToCsvPresenter
 from queries.game_state_form import GameStateFormQuery
+from services.command_bus import CommandBus
 from services.config import Configuration, load_config
 from services.entries_reducer import EntriesReducer
 from services.steam_api import SteamApi
@@ -43,6 +44,9 @@ def build_container(config: Configuration) -> Container:
         factory=lambda: SteamApi(config.get_steam_api_key(), config.get_steam_id()),
     )
     container.register(Store, factory=lambda: Store(config.get_database_path()))
+    container.register(
+        CommandBus, factory=lambda: CommandBus(container.resolve(Store), container)
+    )
 
     for command_class in get_classes_from("commands"):
         container.register(command_class)
@@ -68,18 +72,17 @@ if __name__ == "__main__":
     store = container.resolve(Store)
 
     # Load games
-    for event in container.resolve(RefreshSteamGamesCommand).execute():
-        store.add_event(event)
+    command_bus = container.resolve(CommandBus)
 
-    for event in container.resolve(RefreshGogGamesCommand).execute(
-        json.loads(get_file_content(Path("data/gog_games_20260105.json")))
-    ):
-        store.add_event(event)
-
-    for event in container.resolve(RefreshEpicGamesCommand).execute(
-        json.loads(get_file_content(Path("data/epic_games_20260109.json")))
-    ):
-        store.add_event(event)
+    command_bus.handle(RefreshSteamGamesCommand)
+    command_bus.handle(
+        RefreshGogGamesCommand,
+        json.loads(get_file_content(Path("data/gog_games_20260105.json"))),
+    )
+    command_bus.handle(
+        RefreshEpicGamesCommand,
+        json.loads(get_file_content(Path("data/epic_games_20260109.json"))),
+    )
 
     # Queries
     with open("form.csv", "w", encoding="utf-8") as file:
