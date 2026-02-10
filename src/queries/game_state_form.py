@@ -7,7 +7,7 @@ class GameStateFormData(TypedDict):
     platforms: str
     is_complete: bool
     is_not_a_game: bool
-    is_different_game: bool
+    different_game: str
 
 
 class GameStateFormQuery:
@@ -23,5 +23,5 @@ class GameStateFormQuery:
                 platforms=" ".join(entry.available),
                 is_complete=entry.is_complete,
                 is_not_a_game=not entry.is_game,
-                is_different_game=False,
+                different_game="",
             )
