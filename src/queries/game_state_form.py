@@ -15,7 +15,9 @@ class GameStateFormQuery:
         self.entries_reducer = entries_reducer
 
     def execute(self) -> Generator[GameStateFormData, None, None]:
-        only_games = filter(lambda entry: entry.is_game, self.entries_reducer.get_all_entries())
+        only_games = filter(
+            lambda entry: entry.is_game, self.entries_reducer.get_all_entries()
+        )
 
         for entry in sorted(only_games, key=lambda entry: entry.name):
             yield GameStateFormData(
