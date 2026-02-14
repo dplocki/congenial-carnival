@@ -34,4 +34,4 @@ def test_should_return_games():
     assert result[0]["platforms"] == game_location_1
     assert result[0]["is_complete"] is game_is_complete_1
     assert result[0]["is_not_a_game"] is False
-    assert result[0]["is_different_game"] is False
+    assert result[0]["different_game"] == ""
