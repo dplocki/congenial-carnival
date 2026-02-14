@@ -17,11 +17,11 @@ class ReadGameStateFormCommand:
         next(iter(source))  # Skip header
 
         for name, _, complete, not_a_game, different_game in source:
-            if complete.lower() == "True":
+            if complete.lower() == "true":
                 logger.info(f"Marking game complete: {name}")
                 yield MarkGameCompleteEvent(name)
 
-            if not_a_game.lower() == "True":
+            if not_a_game.lower() == "true":
                 logger.info(f"Marking game as not a game: {name}")
                 yield MarkGameAsOtherEvent(name)
 

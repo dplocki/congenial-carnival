@@ -8,8 +8,8 @@ from tests.utils.data_providers import generate_enum, generate_str
 
 
 def execute_command(csv_file_path: Path):
-    command = ReadGameStateFormCommand()
-    return list(command.execute(csv_file_path))
+    with open(csv_file_path, "r", encoding="utf-8") as file:
+        return list(ReadGameStateFormCommand().execute(file))
 
 
 def test_marks_games_complete_for_yes_rows(tmp_path):
@@ -17,8 +17,9 @@ def test_marks_games_complete_for_yes_rows(tmp_path):
     game_name = generate_str()
     csv_file_path = tmp_path / f"{file_name}.csv"
     csv_file_path.write_text(
-        f"{game_name},{generate_enum(GameLocation)},yes,no,\n"
-        f"{generate_str()},{generate_enum(GameLocation)},no,no,\n"
+        "name,platforms,is_complete,is_not_a_game,different_game\n"
+        f"{game_name},{generate_enum(GameLocation)},True,False,\n"
+        f"{generate_str()},{generate_enum(GameLocation)},False,False,\n"
     )
 
     event = execute_command(csv_file_path)[0]
@@ -32,8 +33,9 @@ def test_marks_games_as_other_for_not_a_game_yes(tmp_path):
     game_name = generate_str()
     csv_file_path = tmp_path / f"{file_name}.csv"
     csv_file_path.write_text(
-        f"{game_name},{generate_enum(GameLocation)},no,yes,\n"
-        f"{generate_str()},{generate_enum(GameLocation)},no,no,\n"
+        "name,platforms,is_complete,is_not_a_game,different_game\n"
+        f"{game_name},{generate_enum(GameLocation)},False,True,\n"
+        f"{generate_str()},{generate_enum(GameLocation)},False,False,\n"
     )
 
     event = execute_command(csv_file_path)[0]
@@ -48,8 +50,9 @@ def test_renames_games_for_different_game(tmp_path):
     new_game_name = generate_str()
     csv_file_path = tmp_path / f"{file_name}.csv"
     csv_file_path.write_text(
-        f"{game_name},{generate_enum(GameLocation)},no,no,{new_game_name}\n"
-        f"{generate_str()},{generate_enum(GameLocation)},no,no,\n"
+        "name,platforms,is_complete,is_not_a_game,different_game\n"
+        f"{game_name},{generate_enum(GameLocation)},False,False,{new_game_name}\n"
+        f"{generate_str()},{generate_enum(GameLocation)},False,False,\n"
     )
 
     event = execute_command(csv_file_path)[0]
