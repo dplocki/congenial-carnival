@@ -30,3 +30,14 @@ class RenameGameEvent(Event):
         super().__init__(EventType.RENAME_GAME, timestamp)
         object.__setattr__(self, "old_name", old_name)
         object.__setattr__(self, "new_name", new_name)
+
+
+@dataclass(frozen=True, init=False)
+class AddGameCompletionTimeEvent(Event):
+    game_name: str
+    time_to_complete: float
+
+    def __init__(self, game_name: str, time_to_complete: float, timestamp: int = None):
+        super().__init__(EventType.ADD_COMPLETION_TIME, timestamp)
+        object.__setattr__(self, "game_name", game_name)
+        object.__setattr__(self, "time_to_complete", time_to_complete)

@@ -10,6 +10,7 @@ class Entry:
     all_names: Set[str] = field(default_factory=set)
     is_complete: bool = field(default=False)
     is_game: bool = field(default=True)
+    time_to_complete: float | None = field(default=None)
 
     def __post_init__(self):
         self.all_names.add(self.name)
