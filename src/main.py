@@ -1,18 +1,14 @@
-import json
 import logging
 import importlib
 import inspect
 from pathlib import Path
 import pkgutil
 from typing import Generator
-from commands.refresh_epic_games import RefreshEpicGamesCommand
-from commands.refresh_gog_games import RefreshGogGamesCommand
-from commands.refresh_steam_games import RefreshSteamGamesCommand
-from presenters.to_csv import ToCsvPresenter
-from queries.game_state_form import GameStateFormQuery
 from services.command_bus import CommandBus
 from services.config import Configuration, load_config
 from services.entries_reducer import EntriesReducer
+from services.how_long_to_beat import HowLongToBeat
+from services.input_data_loader import InputDataLoader
 from services.steam_api import SteamApi
 from services.store import Store
 from punq import Container
@@ -47,6 +43,8 @@ def build_container(config: Configuration) -> Container:
     container.register(
         CommandBus, factory=lambda: CommandBus(container.resolve(Store), container)
     )
+    container.register(HowLongToBeat)
+    container.register(InputDataLoader)
 
     for command_class in get_classes_from("commands"):
         container.register(command_class)
@@ -73,19 +71,4 @@ if __name__ == "__main__":
 
     # Load games
     command_bus = container.resolve(CommandBus)
-
-    command_bus.handle(RefreshSteamGamesCommand)
-    command_bus.handle(
-        RefreshGogGamesCommand,
-        json.loads(get_file_content(Path("data/gog_games_20260105.json"))),
-    )
-    command_bus.handle(
-        RefreshEpicGamesCommand,
-        json.loads(get_file_content(Path("data/epic_games_20260109.json"))),
-    )
-
-    # Queries
-    with open("form.csv", "w", encoding="utf-8") as file:
-        container.resolve(ToCsvPresenter).present(
-            container.resolve(GameStateFormQuery).execute(), file
-        )
+    input_data_loader = container.resolve(InputDataLoader).load()
