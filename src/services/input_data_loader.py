@@ -20,9 +20,9 @@ class InputDataLoader:
         for file_path in json_input_files:
             with open(file_path, "r") as file:
                 command_handler = None
-                if file_path.name.startswith("epic_games"):
+                if file_path.name.endswith("epic_games.json"):
                     command_handler = RefreshEpicGamesCommand
-                elif file_path.name.startswith("gog_games"):
+                elif file_path.name.endswith("gog_games.json"):
                     command_handler = RefreshGogGamesCommand
                 else:
                     logger.warning(f"Unknown input file: {file_path.name}")
