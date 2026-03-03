@@ -1,6 +1,7 @@
 import json
 import logging
 from pathlib import Path
+from datetime import datetime
 
 from commands.refresh_epic_games import RefreshEpicGamesCommand
 from commands.refresh_gog_games import RefreshGogGamesCommand
@@ -28,4 +29,9 @@ class InputDataLoader:
                     logger.warning(f"Unknown input file: {file_path.name}")
                     continue
 
-                self.command_bus.handle(command_handler, json.loads(file.read()))
+                date_string = file_path.name.split("_")[0]
+                data_time_value = datetime.strptime(date_string, "%Y%m%d")
+
+                self.command_bus.handle(
+                    command_handler, json.loads(file.read()), data_time_value
+                )

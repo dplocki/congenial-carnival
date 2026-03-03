@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from typing import Generator, Iterable, TypedDict
 from models.event import (
@@ -24,7 +25,9 @@ class RefreshGogGamesCommand:
     def __init__(self, reducer: EntriesReducer):
         self.reducer: EntriesReducer = reducer
 
-    def execute(self, games_data: Iterable[GameData]) -> Generator[Event, None, None]:
+    def execute(
+        self, games_data: Iterable[GameData], time: datetime = None
+    ) -> Generator[Event, None, None]:
         already_own_gog_games = set()
         completed_games = set()
 

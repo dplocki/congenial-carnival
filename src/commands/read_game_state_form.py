@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 import logging
 from typing import Generator
 from models.event import MarkGameCompleteEvent, MarkGameAsOtherEvent, RenameGameEvent
@@ -12,8 +13,10 @@ class ReadGameStateFormCommand:
     def __init__(self):
         pass
 
-    def execute(self, csv_content) -> Generator[Event, None, None]:
-        source = iter(csv.reader(csv_content))
+    def execute(
+        self, csv_content: str, time: datetime = None
+    ) -> Generator[Event, None, None]:
+        source = iter(csv.reader(csv_content.splitlines()))
         next(iter(source))  # Skip header
 
         for name, _, complete, not_a_game, different_game in source:

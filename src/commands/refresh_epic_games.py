@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from models.event import Event
 from typing import Generator, Iterable
@@ -13,7 +14,9 @@ class RefreshEpicGamesCommand:
     def __init__(self, entries_reducer: EntriesReducer):
         self.entries_reducer = entries_reducer
 
-    def execute(self, games_titles: Iterable[str]) -> Generator[Event, None, None]:
+    def execute(
+        self, games_titles: Iterable[str], time: datetime = None
+    ) -> Generator[Event, None, None]:
         existing_titles = set()
         for entry in self.entries_reducer.get_all_entries():
             if GameLocation.EPIC not in entry.available:
