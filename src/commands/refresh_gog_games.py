@@ -47,14 +47,14 @@ class RefreshGogGamesCommand:
             title = game_datum["title"].strip()
             if title not in already_own_gog_games:
                 logger.info(f"Adding new game on Gog: {title}")
-                yield AddGogGameEvent(title, game_datum["id"])
+                yield AddGogGameEvent(title, game_datum["id"], timestamp=time)
             else:
                 already_own_gog_games.remove(title)
 
             if title not in completed_games and COMPLETED_TAG in game_datum["tags"]:
                 logger.info(f"Game complete: {title} (Gog)")
-                yield MarkGameCompleteEvent(title)
+                yield MarkGameCompleteEvent(title, timestamp=time)
 
         for game_name in already_own_gog_games:
             logger.info(f"Removing game from Gog: {game_name}")
-            yield DeleteGogGameEvent(game_name)
+            yield DeleteGogGameEvent(game_name, timestamp=time)

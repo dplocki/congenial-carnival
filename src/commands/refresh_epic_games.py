@@ -15,7 +15,7 @@ class RefreshEpicGamesCommand:
         self.entries_reducer = entries_reducer
 
     def execute(
-        self, games_titles: Iterable[str], time: datetime = None
+        self, games_titles: Iterable[str], file_time: datetime = None
     ) -> Generator[Event, None, None]:
         existing_titles = set()
         for entry in self.entries_reducer.get_all_entries():
@@ -26,4 +26,4 @@ class RefreshEpicGamesCommand:
 
         for title in set(games_titles) - existing_titles:
             logger.info(f"Adding new game on Epic: {title}")
-            yield AddEpicGameEvent(title)
+            yield AddEpicGameEvent(title, timestamp=file_time)
