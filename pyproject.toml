@@ -3,7 +3,7 @@ name = "congenial-carnival"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
-    "black==25.12.0",
+    "black==26.3.1",
     "howlongtobeatpy==1.0.19",
     "punq==0.7.0",
     "tinydb==4.8.2"
