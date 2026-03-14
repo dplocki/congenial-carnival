@@ -9,7 +9,7 @@ from tests.utils.data_providers import generate_enum, generate_str
 
 def execute_command(csv_file_path: Path):
     with open(csv_file_path, "r", encoding="utf-8") as file:
-        return list(ReadGameStateFormCommand().execute(file))
+        return list(ReadGameStateFormCommand().execute(file.read()))
 
 
 def test_marks_games_complete_for_yes_rows(tmp_path):
