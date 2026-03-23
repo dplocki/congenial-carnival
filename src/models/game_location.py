@@ -6,4 +6,5 @@ class GameLocation(StrEnum):
     GOG = "gog"
     EPIC = "epic"
     UBISOFT = "ubisoft"
+    EA = "ea"
     OTHER = "other"
