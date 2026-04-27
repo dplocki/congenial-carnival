@@ -3,8 +3,11 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
+from commands.refresh_ea_games import RefreshEaGamesCommand
 from commands.refresh_epic_games import RefreshEpicGamesCommand
 from commands.refresh_gog_games import RefreshGogGamesCommand
+from commands.refresh_other_games import RefreshOtherGamesCommand
+from commands.refresh_ubisoft_games import RefreshUbisoftGamesCommand
 from services.command_bus import CommandBus
 
 
@@ -25,6 +28,12 @@ class InputDataLoader:
                     command_handler = RefreshEpicGamesCommand
                 elif file_path.name.endswith("gog_games.json"):
                     command_handler = RefreshGogGamesCommand
+                elif file_path.name.endswith("ubisoft_games.json"):
+                    command_handler = RefreshUbisoftGamesCommand
+                elif file_path.name.endswith("ea_games.json"):
+                    command_handler = RefreshEaGamesCommand
+                elif file_path.name.endswith("other_games.json"):
+                    command_handler = RefreshOtherGamesCommand
                 else:
                     logger.warning(f"Unknown input file: {file_path.name}")
                     continue
