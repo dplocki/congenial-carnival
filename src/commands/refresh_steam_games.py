@@ -6,7 +6,6 @@ from models.game_location import GameLocation
 from services.entries_reducer import EntriesReducer
 from services.steam_api import SteamApi
 
-
 get_name = attrgetter("name")
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,6 @@
 import configparser
 import os
 
-
 CONFIG_PLACEMENT = os.path.expanduser("~/.config/congenial-carnival/config.ini")
 DATABASE_FILE_PATH = "database"
 STEAM_API_KEY = "steam_api_key"

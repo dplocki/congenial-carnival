@@ -4,7 +4,6 @@ from services.entries_reducer import EntriesReducer
 from services.how_long_to_beat import HowLongToBeat
 from models.event import Event, AddGameCompletionTimeEvent
 
-
 logger = logging.getLogger(__name__)
 
 

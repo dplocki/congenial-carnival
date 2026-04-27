@@ -3,7 +3,6 @@ from commands.refresh_games_by_simple_list import RefreshGamesBySimpleListComman
 from models.game_location import GameLocation
 from services.entries_reducer import EntriesReducer
 
-
 logger = logging.getLogger(__name__)
 
 

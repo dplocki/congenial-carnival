@@ -10,7 +10,6 @@ from commands.refresh_other_games import RefreshOtherGamesCommand
 from commands.refresh_ubisoft_games import RefreshUbisoftGamesCommand
 from services.command_bus import CommandBus
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -10,7 +10,6 @@ from models.game_location import GameLocation
 from models.event import Event
 from services.entries_reducer import EntriesReducer
 
-
 logger = logging.getLogger(__name__)
 COMPLETED_TAG = "COMPLETED"
 

@@ -5,7 +5,6 @@ from typing import Generator
 from models.event import MarkGameCompleteEvent, MarkGameAsOtherEvent, RenameGameEvent
 from models.event import Event
 
-
 logger = logging.getLogger(__name__)
 
 
