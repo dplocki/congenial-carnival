@@ -3,7 +3,6 @@ from tinydb import TinyDB
 
 from models.event import (
     AddEpicGameEvent,
-    AddGameEvent,
     AddGogGameEvent,
     AddSteamGameEvent,
     DeleteGameEvent,
@@ -21,7 +20,7 @@ class Store:
         self.events = None
         self.table_events = self.db.table("events")
 
-    def add_event(self, event: AddGameEvent):
+    def add_event(self, event: Event):
         self._load_saved_events()
         self.events.append(event)
         self.table_events.insert(event.__dict__)
@@ -50,7 +49,7 @@ def parse_event(data: dict):
         elif game_location == GameLocation.EPIC:
             return AddEpicGameEvent(**data)
 
-        raise ValueError(f"Unknown add game type: {event_type}")
+        raise ValueError(f"Unknown add game type: {game_location}")
 
     elif event_type == EventType.DELETE_GAME:
         return DeleteGameEvent(**data)
