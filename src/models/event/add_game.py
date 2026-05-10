@@ -41,3 +41,21 @@ class AddGogGameEvent(AddGameEvent):
 class AddEpicGameEvent(AddGameEvent):
     def __init__(self, name: str, timestamp: int = None):
         super().__init__(name, GameLocation.EPIC, timestamp)
+
+
+@dataclass(frozen=True, init=False)
+class AddEAGameEvent(AddGameEvent):
+    def __init__(self, name: str, timestamp: int = None):
+        super().__init__(name, GameLocation.EA, timestamp)
+
+
+@dataclass(frozen=True, init=False)
+class AddUbisoftGameEvent(AddGameEvent):
+    def __init__(self, name: str, timestamp: int = None):
+        super().__init__(name, GameLocation.UBISOFT, timestamp)
+
+
+@dataclass(frozen=True, init=False)
+class AddOtherGameEvent(AddGameEvent):
+    def __init__(self, name: str, timestamp: int = None):
+        super().__init__(name, GameLocation.OTHER, timestamp)

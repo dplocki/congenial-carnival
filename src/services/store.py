@@ -10,6 +10,7 @@ from models.event import (
     EventType,
     MarkGameCompleteEvent,
 )
+from models.event.add_game import AddEAGameEvent, AddOtherGameEvent, AddUbisoftGameEvent
 from models.event.other import MarkGameAsOtherEvent, RenameGameEvent
 from models.game_location import GameLocation
 
@@ -48,6 +49,12 @@ def parse_event(data: dict):
             return AddGogGameEvent(**data)
         elif game_location == GameLocation.EPIC:
             return AddEpicGameEvent(**data)
+        elif game_location == GameLocation.EA:
+            return AddEAGameEvent(**data)
+        elif game_location == GameLocation.UBISOFT:
+            return AddUbisoftGameEvent(**data)
+        elif game_location == GameLocation.OTHER:
+            return AddOtherGameEvent(**data)
 
         raise ValueError(f"Unknown add game type: {game_location}")
 
