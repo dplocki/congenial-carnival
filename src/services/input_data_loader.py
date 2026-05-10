@@ -39,7 +39,8 @@ class InputDataLoader:
 
                 date_string = file_path.name.split("_")[0]
                 data_time_value = datetime.strptime(date_string, "%Y%m%d")
+                timestamp = int(data_time_value.timestamp())
 
                 self.command_bus.handle(
-                    command_handler, json.loads(file.read()), data_time_value
+                    command_handler, json.loads(file.read()), timestamp
                 )
