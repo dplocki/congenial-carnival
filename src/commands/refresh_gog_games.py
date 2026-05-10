@@ -25,7 +25,7 @@ class RefreshGogGamesCommand:
         self.reducer: EntriesReducer = reducer
 
     def execute(
-        self, games_data: Iterable[GameData], time: datetime = None
+        self, games_data: Iterable[GameData], timestamp: int = None
     ) -> Generator[Event, None, None]:
         already_own_gog_games = set()
         completed_games = set()
@@ -46,14 +46,14 @@ class RefreshGogGamesCommand:
             title = game_datum["title"].strip()
             if title not in already_own_gog_games:
                 logger.info(f"Adding new game on Gog: {title}")
-                yield AddGogGameEvent(title, game_datum["id"], timestamp=time)
+                yield AddGogGameEvent(title, game_datum["id"], timestamp=timestamp)
             else:
                 already_own_gog_games.remove(title)
 
             if title not in completed_games and COMPLETED_TAG in game_datum["tags"]:
                 logger.info(f"Game complete: {title} (Gog)")
-                yield MarkGameCompleteEvent(title, timestamp=time)
+                yield MarkGameCompleteEvent(title, timestamp=timestamp)
 
         for game_name in already_own_gog_games:
             logger.info(f"Removing game from Gog: {game_name}")
-            yield DeleteGogGameEvent(game_name, timestamp=time)
+            yield DeleteGogGameEvent(game_name, timestamp=timestamp)
