@@ -4,6 +4,9 @@ import inspect
 from pathlib import Path
 import pkgutil
 from typing import Generator
+from commands.refresh_steam_games import RefreshSteamGamesCommand
+from presenters.to_csv import ToCsvPresenter
+from queries.owned_games import OwnedGamesQuery
 from services.command_bus import CommandBus
 from services.config import Configuration, load_config
 from services.entries_reducer import EntriesReducer
@@ -71,4 +74,11 @@ if __name__ == "__main__":
 
     # Load games
     command_bus = container.resolve(CommandBus)
+    command_bus.handle(RefreshSteamGamesCommand)
     input_data_loader = container.resolve(InputDataLoader).load()
+
+    # Present owned games as CSV
+    owned_games = OwnedGamesQuery(container.resolve(EntriesReducer)).execute()
+    output_path = Path("owned_games.csv")
+    with output_path.open("w", encoding="utf-8", newline="") as output_file:
+        ToCsvPresenter().present(owned_games, output_file)
