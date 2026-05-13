@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
+from commands.read_game_state_form import ReadGameStateFormCommand
 from commands.refresh_ea_games import RefreshEaGamesCommand
 from commands.refresh_epic_games import RefreshEpicGamesCommand
 from commands.refresh_gog_games import RefreshGogGamesCommand
@@ -43,4 +44,21 @@ class InputDataLoader:
 
                 self.command_bus.handle(
                     command_handler, json.loads(file.read()), timestamp
+                )
+
+        csv_input_files = sorted(Path("input_data").glob("*.csv"))
+        for file_path in csv_input_files:
+            with open(file_path, "r") as file:
+                command_handler = None
+                if file_path.name.endswith("game_form_state.csv"):
+                    command_handler = ReadGameStateFormCommand
+                else:
+                    logger.warning(f"Unknown input file: {file_path.name}")
+                    continue
+
+                date_string = file_path.name.split("_")[0]
+                data_time_value = datetime.strptime(date_string, "%Y%m%d")
+                timestamp = int(data_time_value.timestamp())
+                self.command_bus.handle(
+                    command_handler, file.read(), timestamp
                 )
